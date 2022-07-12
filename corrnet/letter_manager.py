@@ -96,6 +96,16 @@ class LetterManager:
             g[source][target]['type'] = g[source][target].get('types', set()).union({edge_type})
 
     def _get_relevant_letters(self, earliest_date, latest_date):
+        earliest_date, latest_date = self.init_earliest_and_latest_date(earliest_date, latest_date)
+        earliest_date = max(self.earliest_date(), earliest_date)
+        latest_date = min(self.latest_date(), latest_date)
+        not_too_early = self._letter_data[self._date_col] >= earliest_date
+        not_too_late = self._letter_data[self._date_col] <= latest_date
+        relevant_letters = self._letter_data[not_too_early & not_too_late]
+        relevant_letters.reset_index(inplace=True)
+        return relevant_letters
+
+    def init_earliest_and_latest_date(self, earliest_date, latest_date):
         if earliest_date is None:
             earliest_date = self.earliest_date()
         elif isinstance(earliest_date, str):
@@ -104,10 +114,4 @@ class LetterManager:
             latest_date = self.latest_date()
         elif isinstance(latest_date, str):
             latest_date = pd.to_datetime(latest_date)
-        earliest_date = max(self.earliest_date(), earliest_date)
-        latest_date = min(self.latest_date(), latest_date)
-        not_too_early = self._letter_data[self._date_col] >= earliest_date
-        not_too_late = self._letter_data[self._date_col] <= latest_date
-        relevant_letters = self._letter_data[not_too_early & not_too_late]
-        relevant_letters.reset_index(inplace=True)
-        return relevant_letters
+        return earliest_date, latest_date
