@@ -12,7 +12,9 @@
   git clone https://github.com/bionetslab/corrnet.git
   ```
 
-  
+## Available functions
+
+Click on the file `tutorial.ipynb` in the list of files provided above to get an overview of the most important functions available in CorrNet.
 
 ## Usage
 
