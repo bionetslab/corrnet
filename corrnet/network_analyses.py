@@ -7,11 +7,12 @@ from collections import Counter
 import json
 
 
-def temporal_analysis(letter_manager, subjects_as_nodes=True, earliest_date=None, latest_date=None, window_size='5 y',
-                      step_width='1 y', save_as=None):
-    g = letter_manager.to_digraph(subjects_as_nodes, earliest_date, latest_date)
-    window_columns = ['window_start', 'window_end', 'node_preservation', 'edge_preservation']
-    graph_columns = ['num_nodes', 'num_edges', 'transitivity', 'mean_size_scc', 'mean_size_wcc', 'coverage_largest_scc',
+def temporal_analysis(letter_manager, subjects_as_nodes=False, earliest_date=None, latest_date=None, type_filters=None,
+                      window_size='5 y', step_width='1 y', save_as=None):
+    g = letter_manager.to_digraph(subjects_as_nodes, earliest_date, latest_date, type_filters)
+    window_columns = ['window_start', 'window_end', 'node_preservation', 'edge_preservation', 'node_novelty',
+                      'edge_novelty', 'node_congruence', 'edge_congruence']
+    graph_columns = ['num_nodes', 'num_edges', 'transitivity', 'num_sccs', 'num_wccs', 'coverage_largest_scc',
                      'coverage_largest_wcc']
     graph_columns += [f'{prefix}_{infix}_degree_{suffix}' for prefix in ['weighted', 'unweighted']
                       for infix in ['in', 'out', 'total'] for suffix in ['mean', 'median', 'var', 'max', 'min']]
@@ -28,7 +29,7 @@ def temporal_analysis(letter_manager, subjects_as_nodes=True, earliest_date=None
     old_node_set = None
     old_edge_set = None
     while True:
-        g = letter_manager.to_digraph(subjects_as_nodes, window_start, window_end)
+        g = letter_manager.to_digraph(subjects_as_nodes, window_start, window_end, type_filters)
         new_node_set = set(g.nodes())
         new_edge_set = set(g.edges())
         if len(new_node_set) == 0:
@@ -36,8 +37,12 @@ def temporal_analysis(letter_manager, subjects_as_nodes=True, earliest_date=None
                 break
             window_start, window_end = _increment_window(window_start, window_end, step_width)
             continue
-        temporal_data['node_preservation'].append(_jaccard_index(old_node_set, new_node_set))
-        temporal_data['edge_preservation'].append(_jaccard_index(old_edge_set, new_edge_set))
+        temporal_data['node_preservation'].append(_preservation(old_node_set, new_node_set))
+        temporal_data['edge_preservation'].append(_preservation(old_edge_set, new_edge_set))
+        temporal_data['node_novelty'].append(_novelty(old_node_set, new_node_set))
+        temporal_data['edge_novelty'].append(_novelty(old_edge_set, new_edge_set))
+        temporal_data['node_congruence'].append(_congruence(old_node_set, new_node_set))
+        temporal_data['edge_congruence'].append(_congruence(old_edge_set, new_edge_set))
         old_node_set = new_node_set
         old_edge_set = new_edge_set
         temporal_data['window_start'].append(window_start)
@@ -45,7 +50,7 @@ def temporal_analysis(letter_manager, subjects_as_nodes=True, earliest_date=None
         properties = compute_network_properties(g)
         for graph_column in graph_columns:
             temporal_data[graph_column].append(properties[graph_column])
-        pageranks = compute_pageranks(g)
+        pageranks = compute_pagerank(g)
         for node in all_nodes:
             temporal_data[f'pagerank_original_{node}'].append(pageranks['original']['pageranks'].get(node, 0.0))
             temporal_data[f'pagerank_reversed_{node}'].append(pageranks['reversed']['pageranks'].get(node, 0.0))
@@ -53,20 +58,82 @@ def temporal_analysis(letter_manager, subjects_as_nodes=True, earliest_date=None
             break
         window_start, window_end = _increment_window(window_start, window_end, step_width)
     temporal_data = pd.DataFrame(data=temporal_data)
-    mean_pageranks = dict()
-    mean_pageranks['original'] = sorted([(node, temporal_data[f'pagerank_original_{node}'].mean())
-                                         for node in all_nodes], key=lambda t: t[1], reverse=True)
-    mean_pageranks['reversed'] = sorted([(node, temporal_data[f'pagerank_reversed_{node}'].mean())
-                                         for node in all_nodes], key=lambda t: t[1], reverse=True)
     if save_as:
         temporal_data.to_csv(save_as)
-    else:
-        return temporal_data, mean_pageranks
+    return temporal_data
 
 
-def plot_degree_distributions(g, loglog=True, use_weights=False, save_as=None):
+def plot_pagerank(temporal_data, figsize=None, nodes=None, save_as=None):
+    if nodes is None:
+        aggregated_pageranks = sort_nodes_by_aggregated_pagerank(temporal_data)
+        nodes = [aggregated_pageranks['original'][0][0], aggregated_pageranks['reversed'][0][0]]
+    if figsize is None:
+        figsize = (3*len(nodes), 6)
+    fig, axes = plt.subplots(nrows=len(nodes), ncols=2, figsize=figsize)
+    for i, node in enumerate(nodes):
+        sns.lineplot(data=temporal_data, x='window_start', y=f'pagerank_original_{node}', ax=axes[i,0])
+        sns.lineplot(data=temporal_data, x='window_start', y=f'pagerank_reversed_{node}', ax=axes[i, 1])
+        for j in [0,1]:
+            axes[i, j].set_xlabel('Window start')
+            axes[i, j].set_title(node)
+        axes[i, 0].set_ylabel('Pagerank on\noriginal network')
+        axes[i, 1].set_ylabel('Pagerank on\nreversed network')
+    _return_fig(fig, save_as)
+
+
+def plot_network_properties(temporal_data, figsize=None, save_as=None):
+    if figsize is None:
+        figsize = (9, 9)
+    graph_columns = ['num_nodes', 'num_edges', 'transitivity', 'num_sccs', 'num_wccs', 'coverage_largest_scc',
+                     'coverage_largest_wcc']
+    ylabels = {'num_nodes': 'Number of\nnodes', 'num_edges': 'Number of\nedges', 'transitivity': 'Transitivity',
+               'num_sccs': 'Number of\nSCCs', 'num_wccs': 'Number of\nWCCs',
+               'coverage_largest_scc': 'Coverage of\nlargest SCC', 'coverage_largest_wcc': 'Coverage of\nlargest WCC'}
+    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=figsize)
+    for k, column in enumerate(graph_columns):
+        i = k // 3
+        j = k % 3
+        sns.lineplot(data=temporal_data, x='window_start', y=column, ax=axes[i, j])
+        axes[i, j].set_xlabel('Window start')
+        axes[i, j].set_ylabel(ylabels[column])
+    axes[2, 1].axis('off')
+    axes[2, 2].axis('off')
+    _return_fig(fig, save_as)
+
+
+def plot_network_dynamics(temporal_data, figsize=None, save_as=None):
+    if figsize is None:
+        figsize = (9, 6)
+    window_columns = ['node_preservation', 'node_novelty', 'node_congruence', 'edge_preservation', 'edge_novelty',
+                      'edge_congruence']
+    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=figsize)
+    for k, column in enumerate(window_columns):
+        i = k // 3
+        j = k % 3
+        sns.lineplot(data=temporal_data, x='window_start', y=column, ax=axes[i, j])
+        axes[i, j].set_xlabel('Window start')
+        axes[i, j].set_ylabel(' '.join(column.split('_')).capitalize())
+    _return_fig(fig, save_as)
+
+
+def sort_nodes_by_aggregated_pagerank(temporal_data, aggregator=np.mean):
+    all_nodes = []
+    for column in temporal_data.columns:
+        if column.startswith('pagerank_original_'):
+            all_nodes.append(column[18:])
+    aggregated_pageranks = dict()
+    aggregated_pageranks['original'] = sorted([(node, aggregator(temporal_data[f'pagerank_original_{node}']))
+                                               for node in all_nodes], key=lambda t: t[1], reverse=True)
+    aggregated_pageranks['reversed'] = sorted([(node, aggregator(temporal_data[f'pagerank_reversed_{node}']))
+                                               for node in all_nodes], key=lambda t: t[1], reverse=True)
+    return aggregated_pageranks
+
+
+def plot_degree_distributions(g, loglog=True, use_weights=False, figsize=None, save_as=None):
     subjects_as_nodes = g.graph['subjects_as_nodes']
-    fig, axes = plt.subplots(nrows=3+subjects_as_nodes, ncols=3, figsize=(9+3*subjects_as_nodes, 9))
+    if figsize is None:
+        figsize = (9+3*subjects_as_nodes, 9)
+    fig, axes = plt.subplots(nrows=3+subjects_as_nodes, ncols=3, figsize=figsize)
     nodes = list(g.nodes())
     _plot_degree_distributions_for_nodes(g, nodes, 'All nodes', 0, loglog, use_weights, axes)
     sender_col = g.graph['sender_col']
@@ -79,14 +146,10 @@ def plot_degree_distributions(g, loglog=True, use_weights=False, save_as=None):
         subject_col = g.graph['subject_col']
         nodes = [node for node in g.nodes() if subject_col in g.nodes[node]['roles']]
         _plot_degree_distributions_for_nodes(g, nodes, f'"{subject_col}" nodes', 3, loglog, use_weights, axes)
-    fig.tight_layout()
-    if save_as:
-        fig.savefig(save_as)
-    else:
-        return fig
+    _return_fig(fig, save_as)
 
 
-def compute_pageranks(g, alpha=0.85, k=10, save_as=None):
+def compute_pagerank(g, alpha=0.85, k=10, save_as=None):
     pageranks = dict()
     pageranks['original'] = {'pageranks': nx.pagerank_scipy(g, alpha=alpha)}
     pageranks['original'][f'top_{k}'] = sorted(list(pageranks['original']['pageranks'].items()),
@@ -97,8 +160,7 @@ def compute_pageranks(g, alpha=0.85, k=10, save_as=None):
     if save_as:
         with open(save_as, mode='w') as fp:
             json.dump(pageranks, fp, indent='\t', sort_keys=True)
-    else:
-        return pageranks
+    return pageranks
 
 
 def compute_network_properties(g, save_as=None):
@@ -108,8 +170,8 @@ def compute_network_properties(g, save_as=None):
     properties['transitivity'] = nx.transitivity(g)
     sccs = list(nx.strongly_connected_components(g))
     wccs = list(nx.weakly_connected_components(g))
-    properties['mean_size_scc'] = properties['num_nodes'] / sum(1 for _ in sccs)
-    properties['mean_size_wcc'] = properties['num_nodes'] / sum(1 for _ in wccs)
+    properties['num_sccs'] = sum(1 for _ in sccs)
+    properties['num_wccs'] = sum(1 for _ in wccs)
     properties['coverage_largest_scc'] = max([len(scc) for scc in sccs]) / properties['num_nodes']
     properties['coverage_largest_wcc'] = max([len(wcc) for wcc in wccs]) / properties['num_nodes']
     _compute_degree_statistics(g, use_weights=False, properties=properties)
@@ -117,8 +179,7 @@ def compute_network_properties(g, save_as=None):
     if save_as:
         with open(save_as, mode='w') as fp:
             json.dump(properties, fp, indent='\t', sort_keys=True)
-    else:
-        return properties
+    return properties
 
 
 def _plot_degree_distributions_for_nodes(g, nodes, title, row, loglog, use_weights, axes):
@@ -199,7 +260,19 @@ def _summarize_degree_sequence(degrees, prefix, properties):
     properties[f'{prefix}_degree_min'] = int(np.min(degrees))
 
 
-def _jaccard_index(set_1, set_2):
+def _preservation(set_1, set_2):
+    if set_1 is None or set_2 is None:
+        return None
+    return len(set_1.intersection(set_2)) / len(set_1)
+
+
+def _novelty(set_1, set_2):
+    if set_1 is None or set_2 is None:
+        return None
+    return len(set_2.difference(set_1)) / len(set_2)
+
+
+def _congruence(set_1, set_2):
     if set_1 is None or set_2 is None:
         return None
     return len(set_1.intersection(set_2)) / len(set_1.union(set_2))
@@ -221,3 +294,9 @@ def _increment_window(window_start, window_end, step_width):
     window_end = _add_months_to_timestamp(window_end, step_width)
     return window_start, window_end
 
+
+def _return_fig(fig, save_as):
+    fig.tight_layout()
+    if save_as:
+        fig.savefig(save_as)
+    return fig

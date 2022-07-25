@@ -1,5 +1,4 @@
 import pandas as pd
-import warnings
 import matplotlib.pyplot as plt
 import networkx as nx
 import seaborn as sns
@@ -16,6 +15,7 @@ class LetterManager:
         self._provenance_col = provenance_col
         self._type_col = type_col
         self._letter_data = None
+        self._bad_letter_data = None
         self._num_letters = None
         self._parse_letter_data(path_letter_data)
 
@@ -37,11 +37,15 @@ class LetterManager:
             except ValueError:
                 idx_bad_dates.append(i)
         if len(idx_bad_dates) > 0:
+            self._bad_letter_data = self._letter_data.loc[idx_bad_dates].copy()
+            self._bad_letter_data.reset_index(inplace=True)
             self._letter_data.drop(index=idx_bad_dates, inplace=True)
             self._letter_data.reset_index(inplace=True)
-            warnings.warn(f'Found and ignored {len(idx_bad_dates)} letters with invalid dates.', UserWarning)
         self._letter_data[self._date_col] = pd.to_datetime(self._letter_data[self._date_col])
         self._num_letters = self._letter_data.shape[0]
+
+    def bad_letter_data(self):
+        return self._bad_letter_data
 
     def earliest_date(self):
         return self._letter_data[self._date_col].min()
@@ -57,12 +61,9 @@ class LetterManager:
             _ = sns.histplot(self._letter_data, x=self._date_col, ax=ax)
         ax.set_ylabel('Number of letters')
         ax.set_xlabel('Date')
-        if save_as:
-            fig.savefig(save_as)
-        else:
-            return fig
+        _return_fig(fig, save_as)
 
-    def to_digraph(self, subjects_as_nodes=True, earliest_date=None, latest_date=None):
+    def to_digraph(self, subjects_as_nodes=False, earliest_date=None, latest_date=None, type_filters=None):
         relevant_letters = self._get_relevant_letters(earliest_date, latest_date)
         g = nx.DiGraph()
         g.graph['subjects_as_nodes'] = subjects_as_nodes
@@ -72,6 +73,8 @@ class LetterManager:
         g.graph['has_provenance_data'] = (self._provenance_col is not None)
         g.graph['has_edge_type_data'] = (self._type_col is not None)
         for i in range(relevant_letters.shape[0]):
+            if self._type_col and type_filters and relevant_letters.loc[i, self._type_col] not in type_filters:
+                continue
             self._add_edge_to_digraph(relevant_letters, i, self._sender_col, self._addressee_col, g)
             if subjects_as_nodes:
                 self._add_edge_to_digraph(relevant_letters, i, self._subject_col, self._sender_col, g)
@@ -115,3 +118,10 @@ class LetterManager:
         elif isinstance(latest_date, str):
             latest_date = pd.to_datetime(latest_date)
         return earliest_date, latest_date
+
+
+def _return_fig(fig, save_as):
+    fig.tight_layout()
+    if save_as:
+        fig.savefig(save_as)
+    return fig

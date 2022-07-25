@@ -1,2 +1,3 @@
 from .letter_manager import LetterManager
-from .analytics import plot_degree_distributions, compute_network_properties, compute_pageranks, temporal_analysis
+from .network_analyses import plot_degree_distributions, compute_network_properties, compute_pagerank, \
+    temporal_analysis, sort_nodes_by_aggregated_pagerank, plot_pagerank, plot_network_properties, plot_network_dynamics
