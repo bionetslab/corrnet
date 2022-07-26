@@ -76,8 +76,8 @@ def plot_pagerank(temporal_data, figsize=None, nodes=None, save_as=None):
         for j in [0,1]:
             axes[i, j].set_xlabel('Window start')
             axes[i, j].set_title(node)
-        axes[i, 0].set_ylabel('Pagerank on\noriginal network')
-        axes[i, 1].set_ylabel('Pagerank on\nreversed network')
+        axes[i, 0].set_ylabel('Normalized PageRank\non original network')
+        axes[i, 1].set_ylabel('Normalized PageRank\non reversed network')
     _return_fig(fig, save_as)
 
 
@@ -116,6 +116,27 @@ def plot_network_dynamics(temporal_data, figsize=None, save_as=None):
     _return_fig(fig, save_as)
 
 
+def plot_neighborhood(g, node, figsize=None, save_as=None, margins=(None, None)):
+    if figsize is None:
+        figsize = (12, 6)
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=figsize)
+    in_nbs = list(g.predecessors(node))
+    _plot_neighbors(g, node, in_nbs, axes[0], margins[0])
+    out_nbs = list(g.successors(node))
+    _plot_neighbors(g, node, out_nbs, axes[1], margins[1])
+    axes[0].set_title('In-neighbors')
+    axes[1].set_title('Out-neighbors')
+    _return_fig(fig, save_as)
+
+
+def _plot_neighbors(g, node, neighbors, ax, margins):
+    h = nx.induced_subgraph(g, [node] + neighbors)
+    colors = ['red' if u == node else 'cyan' for u in list(h)]
+    shells = [[node], neighbors]
+    pos = nx.shell_layout(h, shells)
+    nx.draw_networkx(h, pos=pos, ax=ax, node_color=colors, font_size=9, margins=margins, edge_color='grey')
+
+
 def sort_nodes_by_aggregated_pagerank(temporal_data, aggregator=np.mean):
     all_nodes = []
     for column in temporal_data.columns:
@@ -151,10 +172,10 @@ def plot_degree_distributions(g, loglog=True, use_weights=False, figsize=None, s
 
 def compute_pagerank(g, alpha=0.85, k=10, save_as=None):
     pageranks = dict()
-    pageranks['original'] = {'pageranks': nx.pagerank_scipy(g, alpha=alpha)}
+    pageranks['original'] = {'pageranks': _normalized(nx.pagerank_scipy(g, alpha=alpha))}
     pageranks['original'][f'top_{k}'] = sorted(list(pageranks['original']['pageranks'].items()),
                                                key=lambda t: t[1], reverse=True)[:k]
-    pageranks['reversed'] = {'pageranks': nx.pagerank_scipy(g.reverse(copy=False), alpha=alpha)}
+    pageranks['reversed'] = {'pageranks': _normalized(nx.pagerank_scipy(g.reverse(copy=False), alpha=alpha))}
     pageranks['reversed'][f'top_{k}'] = sorted(list(pageranks['reversed']['pageranks'].items()),
                                                key=lambda t: t[1], reverse=True)[:k]
     if save_as:
@@ -300,3 +321,8 @@ def _return_fig(fig, save_as):
     if save_as:
         fig.savefig(save_as)
     return fig
+
+
+def _normalized(d):
+    max_value = np.max(list(d.values()))
+    return {key: value / max_value for key, value in d.items()}

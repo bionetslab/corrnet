@@ -7,7 +7,7 @@ import seaborn as sns
 class LetterManager:
 
     def __init__(self, path_letter_data, date_col='date', sender_col='sender', addressee_col='addressee',
-                 subject_col=None, provenance_col=None, type_col=None):
+                 subject_col=None, provenance_col=None, type_col=None, sep=','):
         self._date_col = date_col
         self._sender_col = sender_col
         self._addressee_col = addressee_col
@@ -17,9 +17,9 @@ class LetterManager:
         self._letter_data = None
         self._bad_letter_data = None
         self._num_letters = None
-        self._parse_letter_data(path_letter_data)
+        self._parse_letter_data(path_letter_data, sep)
 
-    def _parse_letter_data(self, path_letter_data):
+    def _parse_letter_data(self, path_letter_data, sep):
         cols = [self._date_col, self._sender_col, self._addressee_col]
         if self._subject_col:
             cols.append(self._subject_col)
@@ -27,7 +27,7 @@ class LetterManager:
             cols.append(self._provenance_col)
         if self._type_col:
             cols.append(self._type_col)
-        self._letter_data = pd.read_csv(path_letter_data, usecols=cols)
+        self._letter_data = pd.read_csv(path_letter_data, usecols=cols, sep=sep)
         idx_bad_dates = []
         for i in range(self._letter_data.shape[0]):
             try:
@@ -38,7 +38,6 @@ class LetterManager:
                 idx_bad_dates.append(i)
         if len(idx_bad_dates) > 0:
             self._bad_letter_data = self._letter_data.loc[idx_bad_dates].copy()
-            self._bad_letter_data.reset_index(inplace=True)
             self._letter_data.drop(index=idx_bad_dates, inplace=True)
             self._letter_data.reset_index(inplace=True)
         self._letter_data[self._date_col] = pd.to_datetime(self._letter_data[self._date_col])
