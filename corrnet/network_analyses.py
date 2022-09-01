@@ -7,16 +7,16 @@ from collections import Counter
 import json
 
 
-def temporal_analysis(letter_manager, subjects_as_nodes=False, earliest_date=None, latest_date=None, type_filters=None,
+def temporal_analysis(letter_manager, earliest_date=None, latest_date=None, filter_by=None,
                       window_size='5 y', step_width='1 y', save_as=None):
-    g = letter_manager.to_digraph(subjects_as_nodes, earliest_date, latest_date, type_filters)
+    digraph, _ = letter_manager.to_graph(earliest_date, latest_date, build_multi_digraph=False, filter_by=filter_by)
     window_columns = ['window_start', 'window_end', 'node_preservation', 'edge_preservation', 'node_novelty',
                       'edge_novelty', 'node_congruence', 'edge_congruence']
     graph_columns = ['num_nodes', 'num_edges', 'transitivity', 'num_sccs', 'num_wccs', 'coverage_largest_scc',
                      'coverage_largest_wcc']
     graph_columns += [f'{prefix}_{infix}_degree_{suffix}' for prefix in ['weighted', 'unweighted']
                       for infix in ['in', 'out', 'total'] for suffix in ['mean', 'median', 'var', 'max', 'min']]
-    all_nodes = list(g.nodes())
+    all_nodes = list(digraph.nodes())
     node_columns = [f'pagerank_original_{node}' for node in all_nodes]
     node_columns += [f'pagerank_reversed_{node}' for node in all_nodes]
     columns = window_columns + graph_columns + node_columns
@@ -29,9 +29,9 @@ def temporal_analysis(letter_manager, subjects_as_nodes=False, earliest_date=Non
     old_node_set = None
     old_edge_set = None
     while True:
-        g = letter_manager.to_digraph(subjects_as_nodes, window_start, window_end, type_filters)
-        new_node_set = set(g.nodes())
-        new_edge_set = set(g.edges())
+        digraph = letter_manager.to_graph(window_start, window_end, build_multi_digraph=False, filter_by=filter_by)
+        new_node_set = set(digraph.nodes())
+        new_edge_set = set(digraph.edges())
         if len(new_node_set) == 0:
             if window_end >= latest_date:
                 break
@@ -47,10 +47,10 @@ def temporal_analysis(letter_manager, subjects_as_nodes=False, earliest_date=Non
         old_edge_set = new_edge_set
         temporal_data['window_start'].append(window_start)
         temporal_data['window_end'].append(window_end)
-        properties = compute_network_properties(g)
+        properties = compute_network_properties(digraph)
         for graph_column in graph_columns:
             temporal_data[graph_column].append(properties[graph_column])
-        pageranks = compute_pagerank(g)
+        pageranks = compute_centrality(digraph)
         for node in all_nodes:
             temporal_data[f'pagerank_original_{node}'].append(pageranks['original']['pageranks'].get(node, 0.0))
             temporal_data[f'pagerank_reversed_{node}'].append(pageranks['reversed']['pageranks'].get(node, 0.0))
@@ -151,10 +151,9 @@ def sort_nodes_by_aggregated_pagerank(temporal_data, aggregator=np.mean):
 
 
 def plot_degree_distributions(g, loglog=True, use_weights=False, figsize=None, save_as=None):
-    subjects_as_nodes = g.graph['subjects_as_nodes']
     if figsize is None:
-        figsize = (9+3*subjects_as_nodes, 9)
-    fig, axes = plt.subplots(nrows=3+subjects_as_nodes, ncols=3, figsize=figsize)
+        figsize = (9, 9)
+    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=figsize)
     nodes = list(g.nodes())
     _plot_degree_distributions_for_nodes(g, nodes, 'All nodes', 0, loglog, use_weights, axes)
     sender_col = g.graph['sender_col']
@@ -163,62 +162,66 @@ def plot_degree_distributions(g, loglog=True, use_weights=False, figsize=None, s
     addressee_col = g.graph['addressee_col']
     nodes = [node for node in g.nodes() if addressee_col in g.nodes[node]['roles']]
     _plot_degree_distributions_for_nodes(g, nodes, f'"{addressee_col}" nodes', 2, loglog, use_weights, axes)
-    if subjects_as_nodes:
-        subject_col = g.graph['subject_col']
-        nodes = [node for node in g.nodes() if subject_col in g.nodes[node]['roles']]
-        _plot_degree_distributions_for_nodes(g, nodes, f'"{subject_col}" nodes', 3, loglog, use_weights, axes)
     _return_fig(fig, save_as)
 
 
-def compute_pagerank(g, alpha=0.85, k=10, save_as=None):
-    pageranks = dict()
-    pageranks['original'] = {'pageranks': _normalized(nx.pagerank_scipy(g, alpha=alpha))}
-    pageranks['original'][f'top_{k}'] = sorted(list(pageranks['original']['pageranks'].items()),
+def compute_centrality(digraph, centrality='pagerank', k=10, save_as=None):
+    centralities = dict()
+    if centrality == 'pagerank':
+        centrality_fun = nx.pagerank_scipy
+    elif centrality == 'harmonic':
+        centrality_fun = nx.centrality.harmonic_centrality
+    elif centrality == 'betweenness':
+        centrality_fun = nx.centrality.betweenness_centrality
+    elif centrality == 'degree':
+        centrality_fun = nx.centrality.in_degree_centrality
+    centralities['original'] = {'centralities': _normalized(centrality_fun(digraph))}
+    centralities['original'][f'top_{k}'] = sorted(list(centralities['original']['centralities'].items()),
                                                key=lambda t: t[1], reverse=True)[:k]
-    pageranks['reversed'] = {'pageranks': _normalized(nx.pagerank_scipy(g.reverse(copy=False), alpha=alpha))}
-    pageranks['reversed'][f'top_{k}'] = sorted(list(pageranks['reversed']['pageranks'].items()),
+    centralities['reversed'] = {'centralities': _normalized(centrality_fun(digraph.reverse(copy=False)))}
+    centralities['reversed'][f'top_{k}'] = sorted(list(centralities['reversed']['centralities'].items()),
                                                key=lambda t: t[1], reverse=True)[:k]
     if save_as:
         with open(save_as, mode='w') as fp:
-            json.dump(pageranks, fp, indent='\t', sort_keys=True)
-    return pageranks
+            json.dump(centralities, fp, indent='\t', sort_keys=True)
+    return centralities
 
 
-def compute_network_properties(g, save_as=None):
+def compute_network_properties(digraph, save_as=None):
     properties = dict()
-    properties['num_nodes'] = nx.number_of_nodes(g)
-    properties['num_edges'] = nx.number_of_edges(g)
-    properties['transitivity'] = nx.transitivity(g)
-    sccs = list(nx.strongly_connected_components(g))
-    wccs = list(nx.weakly_connected_components(g))
+    properties['num_nodes'] = nx.number_of_nodes(digraph)
+    properties['num_edges'] = nx.number_of_edges(digraph)
+    properties['transitivity'] = nx.transitivity(digraph)
+    sccs = list(nx.strongly_connected_components(digraph))
+    wccs = list(nx.weakly_connected_components(digraph))
     properties['num_sccs'] = sum(1 for _ in sccs)
     properties['num_wccs'] = sum(1 for _ in wccs)
     properties['coverage_largest_scc'] = max([len(scc) for scc in sccs]) / properties['num_nodes']
     properties['coverage_largest_wcc'] = max([len(wcc) for wcc in wccs]) / properties['num_nodes']
-    _compute_degree_statistics(g, use_weights=False, properties=properties)
-    _compute_degree_statistics(g, use_weights=True, properties=properties)
+    _compute_degree_statistics(digraph, use_weights=False, properties=properties)
+    _compute_degree_statistics(digraph, use_weights=True, properties=properties)
     if save_as:
         with open(save_as, mode='w') as fp:
             json.dump(properties, fp, indent='\t', sort_keys=True)
     return properties
 
 
-def _plot_degree_distributions_for_nodes(g, nodes, title, row, loglog, use_weights, axes):
+def _plot_degree_distributions_for_nodes(digraph, nodes, title, row, loglog, use_weights, axes):
     weight = None
     if use_weights:
         weight = 'weight'
-    degrees = [_total_degree(g, weight)[node] for node in nodes]
+    degrees = [_total_degree(digraph, weight)[node] for node in nodes]
     _plot_degree_distribution(degrees, title, 'Total degree', loglog, axes[row, 0])
-    degrees = [g.in_degree(node, weight) for node in nodes]
+    degrees = [digraph.in_degree(node, weight) for node in nodes]
     _plot_degree_distribution(degrees, title, 'In-degree', loglog, axes[row, 1])
-    degrees = [g.out_degree(node, weight) for node in nodes]
+    degrees = [digraph.out_degree(node, weight) for node in nodes]
     _plot_degree_distribution(degrees, title, 'Out-degree', loglog, axes[row, 2])
 
 
-def _total_degree(g, weight):
-    in_degrees = g.in_degree(weight)
-    out_degrees = g.out_degree(weight)
-    return {node: in_degrees[node] + out_degrees[node] for node in g.nodes()}
+def _total_degree(digraph, weight):
+    in_degrees = digraph.in_degree(weight)
+    out_degrees = digraph.out_degree(weight)
+    return {node: in_degrees[node] + out_degrees[node] for node in digraph.nodes()}
 
 
 def _plot_degree_distribution(degrees, title, xlabel, loglog, ax):
