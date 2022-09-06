@@ -5,13 +5,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 import json
-from statannotations.Annotator import Annotator
-import itertools as itt
 
 
 def temporal_analysis(letter_manager, earliest_date=None, latest_date=None, filter_by=None,
                       window_size='5 y', step_width='1 y', save_as=None):
-    digraph, _ = letter_manager.to_graph(earliest_date, latest_date, build_multi_digraph=False, filter_by=filter_by)
+    digraph, _ = letter_manager.construct_graphs(earliest_date, latest_date, build_multi_digraph=False, filter_by=filter_by)
     window_columns = ['window_start', 'window_end', 'node_preservation', 'edge_preservation', 'node_novelty',
                       'edge_novelty', 'node_congruence', 'edge_congruence']
     graph_columns = ['num_nodes', 'num_edges', 'transitivity', 'num_sccs', 'num_wccs', 'coverage_largest_scc',
@@ -23,7 +21,7 @@ def temporal_analysis(letter_manager, earliest_date=None, latest_date=None, filt
     node_columns += [f'pagerank_reversed_{node}' for node in all_nodes]
     columns = window_columns + graph_columns + node_columns
     temporal_data = {column: [] for column in columns}
-    earliest_date, latest_date = letter_manager.init_earliest_and_latest_date(earliest_date, latest_date)
+    earliest_date, latest_date = letter_manager._init_earliest_and_latest_date(earliest_date, latest_date)
     window_start = earliest_date
     window_size = _get_num_months(window_size, 'window_size')
     step_width = _get_num_months(step_width, 'step_width')
@@ -31,7 +29,7 @@ def temporal_analysis(letter_manager, earliest_date=None, latest_date=None, filt
     old_node_set = None
     old_edge_set = None
     while True:
-        digraph = letter_manager.to_graph(window_start, window_end, build_multi_digraph=False, filter_by=filter_by)
+        digraph = letter_manager.construct_graphs(window_start, window_end, build_multi_digraph=False, filter_by=filter_by)
         new_node_set = set(digraph.nodes())
         new_edge_set = set(digraph.edges())
         if len(new_node_set) == 0:
@@ -167,96 +165,6 @@ def plot_degree_distributions(g, loglog=True, use_weights=False, figsize=None, s
     _return_fig(fig, save_as)
 
 
-def compute_centralities(digraph, centrality_measure='pagerank', direction='in', normalize=False, save_as=None):
-    centrality_fun = _get_centrality_fun(centrality_measure)
-    centralities = None
-    if direction == 'in':
-        centralities = _compute_centralities(digraph, centrality_fun, normalize)
-    if direction == 'out':
-        centralities = _compute_centralities(digraph.reverse(copy=False), centrality_fun, normalize)
-    if save_as:
-        with open(save_as, mode='w') as fp:
-            json.dump(centralities, fp, indent='\t', sort_keys=True)
-    return centralities
-
-
-def differential_centrality_analysis(digraph, multi_digraph, split_attribute, centrality_measures, direction,
-                                     roles_as_columns=True, annotate=True, test='Mann-Whitney', text_format='full',
-                                     figsize=None, save_as=None):
-    if figsize is None:
-        if roles_as_columns:
-            figsize = (6, 3 * len(centrality_measures))
-        else:
-            figsize = (3 * len(centrality_measures), 6)
-    if roles_as_columns:
-        fig, axes = plt.subplots(nrows=len(centrality_measures), ncols=2, figsize=figsize)
-    else:
-        fig, axes = plt.subplots(nrows=2, ncols=len(centrality_measures), figsize=figsize)
-
-    sender_sets = dict()
-    addressee_sets = dict()
-    found_values = set()
-    for edge in multi_digraph.edges(data=True):
-        value = edge[2][split_attribute]
-        if pd.isna(value):
-            continue
-        value = str(value)
-        if value not in found_values:
-            sender_sets[value] = set()
-            addressee_sets[value] = set()
-            found_values.add(value)
-        sender_sets[value].add(edge[0])
-        addressee_sets[value].add(edge[1])
-
-    for centrality_id, centrality_measure in enumerate(centrality_measures):
-        for node_sets, role_id, role in zip([sender_sets, addressee_sets], [0, 1],
-                                           [multi_digraph.graph['sender_col'], multi_digraph.graph['addressee_col']]):
-            centralities = compute_centralities(digraph, centrality_measure, direction)
-            all_attributes = []
-            all_centralities = []
-            for value in found_values:
-                for node in node_sets[value]:
-                    all_attributes.append(value)
-                    all_centralities.append(centralities[node])
-            centrality_col_name = f'{centrality_measure} ({direction})'
-            df = pd.DataFrame(data={centrality_col_name: all_centralities, split_attribute: all_attributes})
-            if len(centrality_measures) > 1:
-                if roles_as_columns:
-                    axis = axes[centrality_id, role_id]
-                else:
-                    axis = axes[role_id, centrality_id]
-            else:
-                axis = axes[role_id]
-            sns.violinplot(data=df, y=centrality_col_name, x=split_attribute, cut=0, ax=axis)
-            axis.set_title(f'{role} nodes')
-            if annotate:
-                pairs = list(itt.combinations(found_values, 2))
-                annotator = Annotator(axis, pairs, data=df, y=centrality_col_name, x=split_attribute, plot='violinplot',
-                                      verbose=True)
-                annotator.configure(test=test, text_format=text_format, loc='inside', pvalue_format_string='{:.2e}')
-                annotator.apply_and_annotate()
-
-    _return_fig(fig, save_as)
-
-
-
-
-def _get_centrality_fun(centrality_measure):
-    centrality_fun_dict = {
-        'PageRank centrality': nx.pagerank_scipy,
-        'Harmonic centrality': nx.centrality.harmonic_centrality,
-        'Betweenness centrality': nx.centrality.betweenness_centrality,
-        'Degree centrality': nx.centrality.in_degree_centrality
-    }
-    return centrality_fun_dict[centrality_measure]
-
-
-def _compute_centralities(digraph, centrality_fun, normalize):
-    centralities = centrality_fun(digraph)
-    if normalize:
-        centralities = _normalized(centralities)
-    return centralities
-
 
 def compute_network_properties(digraph, save_as=None):
     properties = dict()
@@ -388,15 +296,3 @@ def _increment_window(window_start, window_end, step_width):
     window_start = _add_months_to_timestamp(window_start, step_width)
     window_end = _add_months_to_timestamp(window_end, step_width)
     return window_start, window_end
-
-
-def _return_fig(fig, save_as):
-    fig.tight_layout()
-    if save_as:
-        fig.savefig(save_as)
-    return fig
-
-
-def _normalized(d):
-    max_value = np.max(list(d.values()))
-    return {key: value / max_value for key, value in d.items()}
