@@ -125,7 +125,7 @@ class LetterManager:
             graph.graph['attribute_names'] += self._attribute_cols
 
     def _build_line_graph(self, multi_digraph):
-        line_graph = nx.Graph(nx.line_graph(multi_digraph))
+        line_graph = nx.DiGraph(nx.line_graph(multi_digraph))
         self._add_graph_attributes(line_graph)
         for node in line_graph.nodes(data=True):
             for attribute in self._attribute_cols + [self._date_col]:

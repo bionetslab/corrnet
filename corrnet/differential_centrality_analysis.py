@@ -9,14 +9,15 @@ from corrnet.compute_centralities import compute_centralities
 
 def differential_centrality_analysis(digraph, multi_digraph, split_attribute, direction,
                                      centrality_measures = ['Degree centrality', 'Harmonic centrality', 'PageRank centrality'],
-                                     roles_as_columns=False, annotate=True, test='Mann-Whitney', text_format='full',
+                                     roles_as_columns=False, annotate=True, test='Mann-Whitney', text_format='star',
                                      figsize=None, save_as=None):
 
+    # Ensure that graph has split attribute.
     utils.check_attribute(multi_digraph, split_attribute)
 
     # Prepare the figure and the node sets.
-    fig, axes = _setup_figure(centrality_measures, roles_as_columns, figsize)
-    sender_sets, addressee_sets, found_values = _split_senders_and_addressees(multi_digraph, split_attribute)
+    fig, axes = _setup_digraph_figure(centrality_measures, roles_as_columns, figsize)
+    sender_sets, addressee_sets, found_values = _split_digraph_senders_and_addressees(multi_digraph, split_attribute)
 
     # Carry out the analyses and plot the results.
     for centrality_id, centrality_measure in enumerate(centrality_measures):
@@ -26,13 +27,37 @@ def differential_centrality_analysis(digraph, multi_digraph, split_attribute, di
             df, centrality_col_name = _compute_centralities(digraph, centrality_measure, direction, found_values,
                                                             node_sets, split_attribute)
             axis = _get_axis(centrality_measures, roles_as_columns, axes, centrality_id, role_id)
-            _plot_axis(df, centrality_col_name, split_attribute, axis, role, annotate, found_values, test, text_format)
+            _plot_axis(df, centrality_col_name, split_attribute, axis, f'{role} nodes', annotate, found_values, test,
+                       text_format)
 
     # Return the figure.
     utils.return_fig(fig, save_as)
 
 
-def _setup_figure(centrality_measures, roles_as_columns, figsize):
+def differential_line_graph_centrality_analysis(line_graph, split_attribute, direction,
+                                                centrality_measures=['Degree centrality', 'Harmonic centrality',
+                                                                     'PageRank centrality'], annotate=True,
+                                                test='Mann-Whitney', text_format='star', figsize=None, save_as=None):
+
+    # Ensure that graph has split attribute.
+    utils.check_attribute(line_graph, split_attribute)
+
+    # Prepare the figure and the node sets.
+    fig, axes = _setup_line_graph_figure(centrality_measures, figsize)
+    node_sets, found_values = _split_line_graph_senders_and_addressees(line_graph, split_attribute)
+
+    # Carry out the analyses and plot the results.
+    for centrality_id, centrality_measure in enumerate(centrality_measures):
+        df, centrality_col_name = _compute_centralities(line_graph, centrality_measure, direction, found_values,
+                                                        node_sets, split_attribute)
+        _plot_axis(df, centrality_col_name, split_attribute, axes[centrality_id], None, annotate,
+                   found_values, test, text_format)
+
+    # Return the figure.
+    utils.return_fig(fig, save_as)
+
+
+def _setup_digraph_figure(centrality_measures, roles_as_columns, figsize):
     if figsize is None:
         if roles_as_columns:
             figsize = (6, 3 * len(centrality_measures))
@@ -44,7 +69,13 @@ def _setup_figure(centrality_measures, roles_as_columns, figsize):
         return plt.subplots(nrows=2, ncols=len(centrality_measures), figsize=figsize)
 
 
-def _split_senders_and_addressees(multi_digraph, split_attribute):
+def _setup_line_graph_figure(centrality_measures, figsize):
+    if figsize is None:
+        figsize = (3 * len(centrality_measures), 3)
+    return plt.subplots(nrows=1, ncols=len(centrality_measures), figsize=figsize)
+
+
+def _split_digraph_senders_and_addressees(multi_digraph, split_attribute):
     sender_sets = dict()
     addressee_sets = dict()
     found_values = set()
@@ -60,6 +91,21 @@ def _split_senders_and_addressees(multi_digraph, split_attribute):
         sender_sets[value].add(edge[0])
         addressee_sets[value].add(edge[1])
     return sender_sets, addressee_sets, found_values
+
+
+def _split_line_graph_senders_and_addressees(line_graph, split_attribute):
+    node_sets = dict()
+    found_values = set()
+    for node in line_graph.nodes(data=True):
+        value = node[1][split_attribute]
+        if pd.isna(value):
+            continue
+        value = str(value)
+        if value not in found_values:
+            node_sets[value] = set()
+            found_values.add(value)
+        node_sets[value].add(node[0])
+    return node_sets, found_values
 
 
 def _compute_centralities(digraph, centrality_measure, direction, found_values, node_sets, split_attribute):
@@ -84,9 +130,10 @@ def _get_axis(centrality_measures, roles_as_columns, axes, centrality_id, role_i
     return axes[role_id]
 
 
-def _plot_axis(df, centrality_col_name, split_attribute, axis, role, annotate, found_values, test, text_format):
+def _plot_axis(df, centrality_col_name, split_attribute, axis, title, annotate, found_values, test, text_format):
     sns.violinplot(data=df, y=centrality_col_name, x=split_attribute, cut=0, ax=axis)
-    axis.set_title(f'{role} nodes')
+    if title is not None:
+        axis.set_title(title)
     if annotate:
         pairs = list(itt.combinations(found_values, 2))
         annotator = Annotator(axis, pairs, data=df, y=centrality_col_name, x=split_attribute, plot='violinplot',

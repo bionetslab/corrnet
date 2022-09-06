@@ -1,4 +1,5 @@
 import pandas as pd
+import networkx as nx
 from networkx.algorithms import node_classification
 import corrnet.utils as utils
 import numpy as np
@@ -35,12 +36,12 @@ def _semi_supervised_analysis(line_graph, predict_attribute, shuffle_labels, num
         accuracies = []
         for test_fold_id, test_fold in enumerate(folds):
             training_fold = [node_id for fold_id in range(num_folds) if fold_id != test_fold_id for node_id in folds[fold_id]]
-            local_line_graph = line_graph.copy()
-            node_list = list(local_line_graph.nodes)
+            undirected_line_graph = nx.Graph(line_graph)
+            node_list = list(undirected_line_graph.nodes)
             for node_id in training_fold:
                 node = node_list[node_id]
-                local_line_graph.nodes[node]['label'] = node_labels[node_id]
-            predicted_labels = _get_method(method_name)(local_line_graph)
+                undirected_line_graph.nodes[node]['label'] = node_labels[node_id]
+            predicted_labels = _get_method(method_name)(undirected_line_graph)
             num_correct = 0
             for node_id in test_fold:
                 node = node_list[node_id]
