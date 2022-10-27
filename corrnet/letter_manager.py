@@ -10,6 +10,17 @@ class LetterManager:
 
     def __init__(self, path_letter_data, date_col='date', sender_col='sender', addressee_col='addressee',
                  attribute_cols=[], sep=',', show_warnings=False):
+        """Constructs a LetterManager object.
+
+        Args:
+            path_letter_data (str): Path to CSV file containing letter meta-data.
+            date_col (str): Name of date column in input file.
+            sender_col (str): Name of sender column in input file.
+            addressee_col (str): Name of addressee column in input file.
+            attribute_cols (list of str): Names of further attribute columns in input to be loaded.
+            sep (char): Seperator in input file.
+            show_warnings (bool): If True, warnings are printed to stdout.
+        """
         self._date_col = date_col
         self._sender_col = sender_col
         self._addressee_col = addressee_col
@@ -20,22 +31,60 @@ class LetterManager:
         self._parse_letter_data(path_letter_data, sep, show_warnings)
 
     def letter_data(self):
+        """Returns letter data.
+
+        Returns:
+            pandas.DataFrame: Data frame containing parsed letter data.
+        """
         return self._letter_data
 
     def bad_letter_data(self):
+        """Returns invalid letter data.
+
+        Returns:
+            pandas.DataFrame: Data frame containing letter records in input file with invalid dates.
+        """
         return self._bad_letter_data
 
     def earliest_date(self, filter_by=None):
+        """Returns earliest date of a letter record matching the filter criterion.
+
+        Args:
+            filter_by (tuple of str or None): None or an attribute-value pair to be used as positive filter when finding
+            the earliest date. If None, all records are considered.
+
+        Returns:
+            pandas._libs.tslibs.timestamps.Timestamp: The earliest date of a letter matching the filter criterion.
+        """
         if filter_by and filter_by[0] in self._attribute_cols:
             return self._letter_data[self._letter_data[filter_by[0]] == filter_by[1]][self._date_col].min()
         return self._letter_data[self._date_col].min()
 
     def latest_date(self, filter_by=None):
+        """Returns latest date of a letter record matching the filter criterion.
+
+        Args:
+            filter_by (tuple of str or None): None or an attribute-value pair to be used as positive filter when finding
+            the latest date. If None, all records are considered.
+
+        Returns:
+            pandas._libs.tslibs.timestamps.Timestamp: The latest date of a letter matching the filter criterion.
+        """
         if filter_by and filter_by[0] in self._attribute_cols:
             return self._letter_data[self._letter_data[filter_by[0]] == filter_by[1]][self._date_col].max()
         return self._letter_data[self._date_col].max()
 
     def plot_date_distribution(self, save_as=None, split_attribute=None):
+        """Plots date distribution of the letter records.
+
+        Args:
+            save_as (str or None): If provided, the returned figure is saved at this path.
+            split_attribute (str or None): If provided, separate distributions are visualized for all values of
+            `split_attribute`.
+
+        Returns:
+            matplotlib.figure.Figure: A figure visualizing date distribution.
+        """
         fig, ax = plt.subplots()
         if split_attribute and split_attribute in self._attribute_cols:
             _ = sns.histplot(self._letter_data, x=self._date_col, ax=ax, element='poly', hue=split_attribute)
@@ -43,10 +92,31 @@ class LetterManager:
             _ = sns.histplot(self._letter_data, x=self._date_col, ax=ax)
         ax.set_ylabel('Number of letters')
         ax.set_xlabel('Date')
-        utils.return_fig(fig, save_as)
+        return utils.return_fig(fig, save_as)
 
     def construct_graphs(self, earliest_date=None, latest_date=None, build_digraph=True, build_multi_digraph=True,
                          build_line_graph=True, filter_by=None):
+        """Constructs graph representation of the letter records.
+
+        Args:
+            earliest_date (str or None): If not None, all records with earlier dates are ignored when constructing the
+                graphs.
+            latest_date (str or None): If not None, all records with later dates are ignored when constructing the
+                graphs.
+            build_digraph (bool): If True, a digraph representation is constructed.
+            build_multi_digraph (bool): If True, a multi-digraph representation is constructed.
+            build_line_graph (bool): If True, a line graph representation is constructed.
+            filter_by (tuple of str or None): None or an attribute-value pair to be used as positive filter when
+            constructing the graphs. If None, all records are considered.
+
+        Returns:
+            networkx.DiGraph or None: Digraph representation of the letter records (or None if `build_digraph` is
+                False).
+            networkx.MultiDiGraph or None: Multi-digraph representation of the letter records (None if
+                `build_multi_digraph` is False).
+            networkx.DiGraph or None: Line graph representation of the letter records (or None if `build_line_graph` is
+                False).
+        """
         relevant_letters = self._get_relevant_letters(earliest_date, latest_date, filter_by)
         build_multi_digraph = build_multi_digraph or build_line_graph
         digraph = multi_digraph = line_graph = None

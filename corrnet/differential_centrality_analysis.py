@@ -8,9 +8,32 @@ from corrnet.compute_centralities import compute_centralities
 
 
 def differential_centrality_analysis(digraph, multi_digraph, split_attribute, direction,
-                                     centrality_measures = ['Degree centrality', 'Harmonic centrality', 'PageRank centrality'],
-                                     roles_as_columns=False, annotate=True, test='Mann-Whitney', text_format='star',
-                                     figsize=None, save_as=None):
+                                     centrality_measures = ['Degree centrality', 'Harmonic centrality',
+                                                            'PageRank centrality'], roles_as_columns=False,
+                                     annotate=True, figsize=None, save_as=None):
+    """Function to carry out differential node centrality analyses on a digraph representation.
+
+    Carries out differential node centrality analyses for sender- and receiver-nodes incident with edges with
+    differing ``split_attribute`` values.
+
+    Args:
+        digraph (networkx.DiGraph): Directed correspondence network (edges from senders to receivers, edges weighted by
+            multiplicity).
+        multi_digraph (networkx.MultiDiGraph): Multigraph representation of directed correspondence network (edges from
+            senders to receivers).
+        split_attribute (str): The edge attribute of ``multi_graph`` used to split the edges.
+        direction (str): Specifies direction of centralities; 'in' for in-centralities, 'out' for out-centralities.
+        centrality_measures (list of str): Specifies centrality measure. List may contain 'Degree centrality',
+            'Harmonic centrality', 'PageRank centrality', and 'Betweenness centrality'.
+        roles_as_columns (bool): True if node roles should be displayed in the columns of the returned violin plots,
+            False if they should be displayed in the rows.
+        annotate (bool): If True, the violin plots are decorated with statistical significance annotations.
+        figsize (tuple or None): Size of the returned figure. If None, the size is determined automatically.
+        save_as (str or None): If provided, the returned figure is saved at this path.
+
+    Returns:
+        matplotlib.figure.Figure: A figure visualizing the results of the analysis.
+    """
 
     # Ensure that graph has split attribute.
     utils.check_attribute(multi_digraph, split_attribute)
@@ -29,17 +52,34 @@ def differential_centrality_analysis(digraph, multi_digraph, split_attribute, di
                                                                            found_values, node_sets, split_attribute,
                                                                            centrality_col_name)
             axis = _get_axis(centrality_measures, roles_as_columns, axes, centrality_id, role_id)
-            _plot_axis(df, centrality_col_name, split_attribute, axis, f'{role} nodes', annotate, found_values, test,
-                       text_format)
+            _plot_axis(df, centrality_col_name, split_attribute, axis, f'{role} nodes', annotate, found_values)
 
     # Return the figure.
-    utils.return_fig(fig, save_as)
+    return utils.return_fig(fig, save_as)
 
 
 def differential_line_graph_centrality_analysis(line_graph, split_attribute, direction,
                                                 centrality_measures=['Degree centrality', 'Harmonic centrality',
                                                                      'PageRank centrality'], annotate=True,
-                                                test='Mann-Whitney', text_format='star', figsize=None, save_as=None):
+                                                figsize=None, save_as=None):
+    """Function to carry out differential node centrality analyses on a line graph representation.
+
+    Carries out differential node centrality analyses for line graph nodes (i.e., edges in digraph representation) with
+    differing ``split_attribute`` values.
+
+    Args:
+        line_graph (nx.DiGraph): Line graph representation of directed correspondence network.
+        split_attribute (str): The node attribute of `line_graph` used to split the nodes.
+        direction (str): Specifies direction of centralities; 'in' for in-centralities, 'out' for out-centralities.
+        centrality_measures (list of str): Specifies centrality measure. List may contain 'Degree centrality',
+            'Harmonic centrality', 'PageRank centrality', and 'Betweenness centrality'.
+        annotate (bool): If True, the violin plots are decorated with statistical significance annotations.
+        figsize (tuple or None): Size of the returned figure. If None, the size is determined automatically.
+        save_as (str or None): If provided, the returned figure is saved at this path.
+
+    Returns:
+        matplotlib.figure.Figure: A figure visualizing the results of the analysis.
+    """
 
     # Ensure that graph has split attribute.
     utils.check_attribute(line_graph, split_attribute)
@@ -53,11 +93,10 @@ def differential_line_graph_centrality_analysis(line_graph, split_attribute, dir
         centrality_col_name = f'{centrality_measure} ({direction})'
         df = _compute_centralities(line_graph, centrality_measure, direction, found_values, node_sets, split_attribute,
                                    centrality_col_name)
-        _plot_axis(df, centrality_col_name, split_attribute, axes[centrality_id], None,
-                   annotate, found_values, test, text_format)
+        _plot_axis(df, centrality_col_name, split_attribute, axes[centrality_id], None, annotate, found_values)
 
     # Return the figure.
-    utils.return_fig(fig, save_as)
+    return utils.return_fig(fig, save_as)
 
 
 def _setup_digraph_figure(centrality_measures, roles_as_columns, figsize):
@@ -135,7 +174,7 @@ def _get_axis(centrality_measures, roles_as_columns, axes, centrality_id, role_i
     return axes[role_id]
 
 
-def _plot_axis(df, centrality_col_name, split_attribute, axis, title, annotate, found_values, test, text_format):
+def _plot_axis(df, centrality_col_name, split_attribute, axis, title, annotate, found_values):
     sns.violinplot(data=df, y=centrality_col_name, x=split_attribute, cut=0, ax=axis)
     if title is not None:
         axis.set_title(title)
@@ -143,5 +182,5 @@ def _plot_axis(df, centrality_col_name, split_attribute, axis, title, annotate, 
         pairs = list(itt.combinations(found_values, 2))
         annotator = Annotator(axis, pairs, data=df, y=centrality_col_name, x=split_attribute, plot='violinplot',
                               verbose=True)
-        annotator.configure(test=test, text_format=text_format, loc='inside', pvalue_format_string='{:.2e}')
+        annotator.configure(test='Mann-Whitney', text_format='star', loc='inside', pvalue_format_string='{:.2e}')
         annotator.apply_and_annotate()

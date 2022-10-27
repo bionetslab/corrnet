@@ -5,11 +5,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 import json
+from corrnet.compute_centralities import compute_centralities
 
 
 def temporal_analysis(letter_manager, earliest_date=None, latest_date=None, filter_by=None,
                       window_size='5 y', step_width='1 y', save_as=None):
-    digraph, _ = letter_manager.construct_graphs(earliest_date, latest_date, build_multi_digraph=False, filter_by=filter_by)
+    digraph, _ = letter_manager.construct_graphs(earliest_date, latest_date, build_multi_digraph=False,
+                                                 build_line_graph=False, filter_by=filter_by)
     window_columns = ['window_start', 'window_end', 'node_preservation', 'edge_preservation', 'node_novelty',
                       'edge_novelty', 'node_congruence', 'edge_congruence']
     graph_columns = ['num_nodes', 'num_edges', 'transitivity', 'num_sccs', 'num_wccs', 'coverage_largest_scc',
@@ -130,20 +132,6 @@ def sort_nodes_by_aggregated_pagerank(temporal_data, aggregator=np.mean):
     return aggregated_pageranks
 
 
-def plot_degree_distributions(g, loglog=True, use_weights=False, figsize=None, save_as=None):
-    if figsize is None:
-        figsize = (9, 9)
-    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=figsize)
-    nodes = list(g.nodes())
-    _plot_degree_distributions_for_nodes(g, nodes, 'All nodes', 0, loglog, use_weights, axes)
-    sender_col = g.graph['sender_col']
-    nodes = [node for node in g.nodes() if sender_col in g.nodes[node]['roles']]
-    _plot_degree_distributions_for_nodes(g, nodes, f'"{sender_col}" nodes', 1, loglog, use_weights, axes)
-    addressee_col = g.graph['addressee_col']
-    nodes = [node for node in g.nodes() if addressee_col in g.nodes[node]['roles']]
-    _plot_degree_distributions_for_nodes(g, nodes, f'"{addressee_col}" nodes', 2, loglog, use_weights, axes)
-    _return_fig(fig, save_as)
-
 
 
 def compute_network_properties(digraph, save_as=None):
@@ -165,34 +153,6 @@ def compute_network_properties(digraph, save_as=None):
     return properties
 
 
-def _plot_degree_distributions_for_nodes(digraph, nodes, title, row, loglog, use_weights, axes):
-    weight = None
-    if use_weights:
-        weight = 'weight'
-    degrees = [_total_degree(digraph, weight)[node] for node in nodes]
-    _plot_degree_distribution(degrees, title, 'Total degree', loglog, axes[row, 0])
-    degrees = [digraph.in_degree(node, weight) for node in nodes]
-    _plot_degree_distribution(degrees, title, 'In-degree', loglog, axes[row, 1])
-    degrees = [digraph.out_degree(node, weight) for node in nodes]
-    _plot_degree_distribution(degrees, title, 'Out-degree', loglog, axes[row, 2])
-
-
-def _total_degree(digraph, weight):
-    in_degrees = digraph.in_degree(weight)
-    out_degrees = digraph.out_degree(weight)
-    return {node: in_degrees[node] + out_degrees[node] for node in digraph.nodes()}
-
-
-def _plot_degree_distribution(degrees, title, xlabel, loglog, ax):
-    degree_counts = Counter(degrees)
-    x, y = zip(*degree_counts.items())
-    ax.scatter(x, y, marker='.')
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel('Frequency')
-    if loglog:
-        ax.set_xscale('log')
-        ax.set_yscale('log')
 
 
 def _add_years_to_timestamp(timestamp, num_years):

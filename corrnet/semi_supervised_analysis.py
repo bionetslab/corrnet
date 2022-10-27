@@ -7,8 +7,27 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def semi_supervised_analysis(line_graph, predict_attribute, methods = ['Harmonic function', 'Local and global consistency'],
-                             num_cv_runs = 100, num_folds=5, figsize = None, save_as = None):
+def semi_supervised_analysis(line_graph, predict_attribute,
+                             methods=['Harmonic function', 'Local and global consistency'], num_cv_runs=100,
+                             num_folds=5, figsize=None, save_as=None):
+    """Use semi-supervised node classification to assess if correspondence network is predictive of edge label.
+
+    Carries out semi-supervised node classification methods on a line graph representations of a directed correspondence
+    network to assess if the network's topology is predictive of a user-selected edge attribute.
+
+    Args:
+        line_graph (networkx.DiGraph): Line graph representation of directed correspondence network.
+        predict_attribute (str): Node attribute of `line_graph` which should be predicted.
+        methods (list of str): Specifies methods to be used for semi-supervised node label prediction. List may contain
+            'Harmonic function' and 'Local and global consistency'.
+        num_cv_runs (int): Number of cross-validation runs.
+        num_folds (int): Number of folds used for cross-validation.
+        figsize (tuple or None): Size of the returned figure. If None, the size is determined automatically.
+        save_as (str or None): If provided, the returned figure is saved at this path.
+
+    Returns:
+        matplotlib.figure.Figure: A figure visualizing the results of the analysis.
+    """
     fig, axes = _setup_figure(methods, figsize)
     for i, method_name in enumerate(methods):
         accuracies_for_real_labels = _semi_supervised_analysis(line_graph, predict_attribute, False, num_cv_runs,
@@ -22,7 +41,7 @@ def semi_supervised_analysis(line_graph, predict_attribute, methods = ['Harmonic
         sns.histplot(data=df, x='Mean CV accuracy', ax=axes[i], hue=f'{predict_attribute} labels', kde=True)
         axes[i].set_title(f'Classifier: {method_name}')
         axes[i].set_ylabel('Number of CV runs')
-    utils.return_fig(fig, save_as)
+    return utils.return_fig(fig, save_as)
 
 
 def _semi_supervised_analysis(line_graph, predict_attribute, shuffle_labels, num_cv_runs, num_folds, method_name):

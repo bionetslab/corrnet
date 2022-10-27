@@ -12,10 +12,6 @@
   git clone https://github.com/bionetslab/corrnet.git
   ```
 
-## Available functions
-
-Click on the file `tutorial.ipynb` in the list of files provided above to get an overview of the most important functions available in CorrNet.
-
 ## Usage
 
 - Navigate to the `corrnet` directory:
@@ -24,13 +20,7 @@ Click on the file `tutorial.ipynb` in the list of files provided above to get an
   cd corrnet
   ```
 
-- All dependencies of CorrNet are available in conda's default environment `base`. So you can simply run CorrNet in this enviroment, which you can activate as follows:
-
-  ```sh
-  conda activate
-  ```
-
-- Alternatively, you can generate and use a custom environment `corrnet` as follows:
+- CorrNet's dependencies are listed in the file `environment.yml`. To install all dependencies, you can generate and a conda environment `corrnet` as follows:
 
   ```sh
   conda env create -f environment.yml
@@ -38,10 +28,10 @@ Click on the file `tutorial.ipynb` in the list of files provided above to get an
   (corrnet) python -m ipykernel install --user --name=corrnet
   ```
 
-- Now, you can use conda as exemplified in the notebook `tutorial.ipynb`:
+- Now, you can use conda as exemplified in the notebook `hu_analyses.ipynb`:
 
   ```sh
-  jupyter notebook tutorial.ipynb
+  jupyter notebook hu_analyses.ipynb
   ```
 
   

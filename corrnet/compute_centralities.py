@@ -3,7 +3,19 @@ import json
 import corrnet.utils as utils
 
 
-def compute_centralities(digraph, centrality_measure='pagerank', direction='in', normalize=False, save_as=None):
+def compute_centralities(digraph, centrality_measure='PageRank centrality', direction='in', normalize=False, save_as=None):
+    """
+
+    Args:
+        digraph (networkx.DiGraph):
+        centrality_measure (str):
+        direction (str):
+        normalize (bool):
+        save_as (str or None):
+
+    Returns:
+
+    """
     centrality_fun = _get_centrality_fun(centrality_measure)
     centralities = None
     if direction == 'in':

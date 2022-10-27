@@ -1,6 +1,9 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import pandas as pd
+
 import corrnet.utils as utils
+from collections import Counter
 
 
 def plot_neighborhood(multi_digraph, node, edge_types=['in', 'out'], edge_color_info=None, figsize=None,
@@ -22,7 +25,65 @@ def plot_neighborhood(multi_digraph, node, edge_types=['in', 'out'], edge_color_
             _plot_neighbors(multi_digraph, node, out_nbs, edge_types[i], edge_color_info, axes[i], margins[i], font_size)
         else:
             _plot_neighbors(multi_digraph, node, out_nbs, edge_types[i], edge_color_info, axes, margins[i], font_size)
-    utils.return_fig(fig, save_as)
+    return utils.return_fig(fig, save_as)
+
+
+def plot_degree_distributions(digraph, figsize=None, save_as=None):
+    if figsize is None:
+        figsize = (9, 3)
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=figsize)
+    in_degrees = dict(digraph.in_degree(weight='weight'))
+    out_degrees = dict(digraph.out_degree(weight='weight'))
+    total_degrees = {node: in_degrees[node] + out_degrees[node] for node in digraph.nodes()}
+    _plot_degree_distribution(total_degrees, 'Total degree', axes[0])
+    _plot_degree_distribution(out_degrees, 'Out-degree', axes[1])
+    _plot_degree_distribution(in_degrees, 'In-degree', axes[2])
+    return utils.return_fig(fig, save_as)
+
+
+def compute_network_properties(digraph=None, multi_digraph=None, line_graph=None):
+    network_types = []
+    nums_nodes = []
+    nums_edges = []
+    nums_wccs = []
+    sizes_lwcc = []
+    if digraph:
+        network_types.append('Digraph')
+        _compute_network_properties(line_graph, nums_nodes, nums_edges, nums_wccs, sizes_lwcc)
+    if multi_digraph:
+        network_types.append('Multi-digraph')
+        _compute_network_properties(multi_digraph, nums_nodes, nums_edges, nums_wccs, sizes_lwcc)
+    if line_graph:
+        network_types.append('Directed line graph')
+        _compute_network_properties(line_graph, nums_nodes, nums_edges, nums_wccs, sizes_lwcc)
+        network_types.append('Undirected line graph')
+        _compute_network_properties(nx.Graph(line_graph), nums_nodes, nums_edges, nums_wccs, sizes_lwcc)
+    return pd.DataFrame(data={'Network type': network_types,
+                              'Num nodes': nums_nodes,
+                              'Num edges': nums_edges,
+                              'Num WCCs': nums_wccs,
+                              'Size LWCC': sizes_lwcc})
+
+
+def _compute_network_properties(graph, nums_nodes, nums_edges, nums_wccs, sizes_lwcc):
+    nums_nodes.append(graph.number_of_nodes())
+    nums_edges.append(graph.number_of_edges())
+    if graph.is_directed():
+        wccs = list(nx.weakly_connected_components(graph))
+    else:
+        wccs = list(nx.connected_components(graph))
+    nums_wccs.append(len(wccs))
+    sizes_lwcc.append(len(wccs[0]))
+
+
+def _plot_degree_distribution(degrees, xlabel, ax):
+    degree_counts = Counter(degrees)
+    x, y = zip(*degree_counts.items())
+    ax.scatter(x, y, marker='.')
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel('Frequency')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
 
 
 def _plot_neighbors(multi_digraph, node, neighbors, edge_type, edge_color_info, ax, margins, font_size):
