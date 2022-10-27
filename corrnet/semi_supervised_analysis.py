@@ -20,7 +20,7 @@ def semi_supervised_analysis(line_graph, predict_attribute, methods = ['Harmonic
             f'{predict_attribute} labels': ['Real' for _ in range(num_cv_runs)] + ['Shuffled' for _ in range(num_cv_runs)]
         })
         sns.histplot(data=df, x='Mean CV accuracy', ax=axes[i], hue=f'{predict_attribute} labels', kde=True)
-        axes[i].set_title(f'Predictor: {method_name}')
+        axes[i].set_title(f'Classifier: {method_name}')
         axes[i].set_ylabel('Number of CV runs')
     utils.return_fig(fig, save_as)
 

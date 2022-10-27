@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import seaborn as sns
 import corrnet.utils as utils
+import warnings
 
 
 class LetterManager:
 
     def __init__(self, path_letter_data, date_col='date', sender_col='sender', addressee_col='addressee',
-                 attribute_cols=[], sep=','):
+                 attribute_cols=[], sep=',', show_warnings=False):
         self._date_col = date_col
         self._sender_col = sender_col
         self._addressee_col = addressee_col
@@ -16,7 +17,7 @@ class LetterManager:
         self._letter_data = None
         self._bad_letter_data = None
         self._num_letters = None
-        self._parse_letter_data(path_letter_data, sep)
+        self._parse_letter_data(path_letter_data, sep, show_warnings)
 
     def letter_data(self):
         return self._letter_data
@@ -24,16 +25,20 @@ class LetterManager:
     def bad_letter_data(self):
         return self._bad_letter_data
 
-    def earliest_date(self):
+    def earliest_date(self, filter_by=None):
+        if filter_by and filter_by[0] in self._attribute_cols:
+            return self._letter_data[self._letter_data[filter_by[0]] == filter_by[1]][self._date_col].min()
         return self._letter_data[self._date_col].min()
 
-    def latest_date(self):
+    def latest_date(self, filter_by=None):
+        if filter_by and filter_by[0] in self._attribute_cols:
+            return self._letter_data[self._letter_data[filter_by[0]] == filter_by[1]][self._date_col].max()
         return self._letter_data[self._date_col].max()
 
-    def plot_date_distribution(self, save_as=None, by_type=False):
+    def plot_date_distribution(self, save_as=None, split_attribute=None):
         fig, ax = plt.subplots()
-        if by_type:
-            _ = sns.histplot(self._letter_data, x=self._date_col, ax=ax, element='poly')
+        if split_attribute and split_attribute in self._attribute_cols:
+            _ = sns.histplot(self._letter_data, x=self._date_col, ax=ax, element='poly', hue=split_attribute)
         else:
             _ = sns.histplot(self._letter_data, x=self._date_col, ax=ax)
         ax.set_ylabel('Number of letters')
@@ -42,7 +47,7 @@ class LetterManager:
 
     def construct_graphs(self, earliest_date=None, latest_date=None, build_digraph=True, build_multi_digraph=True,
                          build_line_graph=True, filter_by=None):
-        relevant_letters = self._get_relevant_letters(earliest_date, latest_date)
+        relevant_letters = self._get_relevant_letters(earliest_date, latest_date, filter_by)
         build_multi_digraph = build_multi_digraph or build_line_graph
         digraph = multi_digraph = line_graph = None
         if build_digraph:
@@ -51,9 +56,6 @@ class LetterManager:
             multi_digraph = nx.MultiDiGraph()
             self._add_graph_attributes(multi_digraph)
         for i in range(relevant_letters.shape[0]):
-            if filter_by and filter_by[0] in self._attribute_cols:
-                if relevant_letters.loc[i, filter_by[0]] not in filter_by[1]:
-                    continue
             if build_digraph:
                 self._add_edge_to_digraph(relevant_letters, i, digraph)
             if build_multi_digraph:
@@ -62,9 +64,14 @@ class LetterManager:
             line_graph = self._build_line_graph(multi_digraph)
         return digraph, multi_digraph, line_graph
 
-    def _parse_letter_data(self, path_letter_data, sep):
+    def _parse_letter_data(self, path_letter_data, sep, show_warnings):
         cols = [self._date_col, self._sender_col, self._addressee_col] + self._attribute_cols
         self._letter_data = pd.read_csv(path_letter_data, usecols=cols, sep=sep)
+        self._check_dates(show_warnings)
+        self._remove_duplicates(show_warnings)
+        self._num_letters = self._letter_data.shape[0]
+
+    def _check_dates(self, show_warnings):
         idx_bad_dates = []
         for i in range(self._letter_data.shape[0]):
             try:
@@ -76,9 +83,18 @@ class LetterManager:
         if len(idx_bad_dates) > 0:
             self._bad_letter_data = self._letter_data.loc[idx_bad_dates].copy()
             self._letter_data.drop(index=idx_bad_dates, inplace=True)
-            self._letter_data.reset_index(inplace=True)
+            self._letter_data.reset_index(inplace=True, drop=True)
+            if show_warnings:
+                warnings.warn(f'Found and removed {len(idx_bad_dates)} records with bad dates.')
         self._letter_data[self._date_col] = pd.to_datetime(self._letter_data[self._date_col])
-        self._num_letters = self._letter_data.shape[0]
+
+    def _remove_duplicates(self, show_warnings):
+        keep = self._letter_data.duplicated().apply(lambda b: not b)
+        num_duplicates = self._letter_data.shape[0] - keep.aggregate('sum')
+        if num_duplicates > 0 and show_warnings:
+            warnings.warn(f'Found and removed {num_duplicates} duplicate records.')
+        self._letter_data = self._letter_data[keep]
+        self._letter_data.reset_index(drop=True, inplace=True)
 
     def _add_edge_to_digraph(self, relevant_letters, i, digraph):
         source = relevant_letters.loc[i, self._sender_col]
@@ -96,14 +112,17 @@ class LetterManager:
         for attribute_col in self._attribute_cols:
             multi_digraph[source][target][key][attribute_col] = relevant_letters.loc[i, attribute_col]
 
-    def _get_relevant_letters(self, earliest_date, latest_date):
+    def _get_relevant_letters(self, earliest_date, latest_date, filter_by):
         earliest_date, latest_date = self._init_earliest_and_latest_date(earliest_date, latest_date)
         earliest_date = max(self.earliest_date(), earliest_date)
         latest_date = min(self.latest_date(), latest_date)
         not_too_early = self._letter_data[self._date_col] >= earliest_date
         not_too_late = self._letter_data[self._date_col] <= latest_date
         relevant_letters = self._letter_data[not_too_early & not_too_late]
-        relevant_letters.reset_index(inplace=True)
+        relevant_letters.reset_index(inplace=True, drop=True)
+        if filter_by and filter_by[0] in self._attribute_cols:
+            relevant_letters = relevant_letters[relevant_letters[filter_by[0]] == filter_by[1]]
+            relevant_letters.reset_index(inplace=True, drop=True)
         return relevant_letters
 
     def _init_earliest_and_latest_date(self, earliest_date, latest_date):

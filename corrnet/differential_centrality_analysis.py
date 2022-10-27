@@ -21,11 +21,13 @@ def differential_centrality_analysis(digraph, multi_digraph, split_attribute, di
 
     # Carry out the analyses and plot the results.
     for centrality_id, centrality_measure in enumerate(centrality_measures):
+        centrality_col_name = f'{centrality_measure} ({direction})'
         for node_sets, role_id, role in zip([sender_sets, addressee_sets], [0, 1],
                                             [multi_digraph.graph['sender_attribute_name'],
                                              multi_digraph.graph['addressee_attribute_name']]):
-            df, centrality_col_name = _compute_centralities(digraph, centrality_measure, direction, found_values,
-                                                            node_sets, split_attribute)
+            df = _compute_centralities(digraph, centrality_measure, direction,
+                                                                           found_values, node_sets, split_attribute,
+                                                                           centrality_col_name)
             axis = _get_axis(centrality_measures, roles_as_columns, axes, centrality_id, role_id)
             _plot_axis(df, centrality_col_name, split_attribute, axis, f'{role} nodes', annotate, found_values, test,
                        text_format)
@@ -48,10 +50,11 @@ def differential_line_graph_centrality_analysis(line_graph, split_attribute, dir
 
     # Carry out the analyses and plot the results.
     for centrality_id, centrality_measure in enumerate(centrality_measures):
-        df, centrality_col_name = _compute_centralities(line_graph, centrality_measure, direction, found_values,
-                                                        node_sets, split_attribute)
-        _plot_axis(df, centrality_col_name, split_attribute, axes[centrality_id], None, annotate,
-                   found_values, test, text_format)
+        centrality_col_name = f'{centrality_measure} ({direction})'
+        df = _compute_centralities(line_graph, centrality_measure, direction, found_values, node_sets, split_attribute,
+                                   centrality_col_name)
+        _plot_axis(df, centrality_col_name, split_attribute, axes[centrality_id], None,
+                   annotate, found_values, test, text_format)
 
     # Return the figure.
     utils.return_fig(fig, save_as)
@@ -108,17 +111,19 @@ def _split_line_graph_senders_and_addressees(line_graph, split_attribute):
     return node_sets, found_values
 
 
-def _compute_centralities(digraph, centrality_measure, direction, found_values, node_sets, split_attribute):
+def _compute_centralities(digraph, centrality_measure, direction, found_values, node_sets, split_attribute,
+                          centrality_col_name):
     centralities = compute_centralities(digraph, centrality_measure, direction)
     all_attributes = []
     all_centralities = []
+    nodes = []
     for value in found_values:
         for node in node_sets[value]:
             all_attributes.append(value)
             all_centralities.append(centralities[node])
-    centrality_col_name = f'{centrality_measure} ({direction})'
-    df = pd.DataFrame(data={centrality_col_name: all_centralities, split_attribute: all_attributes})
-    return df, centrality_col_name
+            nodes.append(node)
+    df = pd.DataFrame(data={centrality_col_name: all_centralities, split_attribute: all_attributes, 'node': nodes})
+    return df
 
 
 def _get_axis(centrality_measures, roles_as_columns, axes, centrality_id, role_id):
