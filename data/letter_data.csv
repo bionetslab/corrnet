@@ -1,5 +1,5 @@
 Institution,Written for,Sender,Receiver,Date,Recommendation Type,Success
-Bleichroeder,Bleichroeder Gerson von,Bleichroeder Samuel,"Rothschild Amschel ""Anselm"" Mayer",1839-11-17,Formal Recommendation,
+Bleichroeder,Bleichroeder Gerson von,Bleichroeder Samuel,Rothschild Amschel Anselm Mayer,1839-11-17,Formal Recommendation,
 Bleichroeder,Kunstgärtner (Job),Rothschild James von,Bleichroeder (Firma),1854-12-22,Request for Recommendation,
 Bleichroeder,Kunstgärtner (Job),Rothschild James von,Bleichroeder (Firma),1855-01-07,Informal Recommendation,
 Bleichroeder,Bleichroeder Gerson von,Polizeipräsident Berlin,Itzenplitz Graf von,1863-12-14,Informal Recommendation,
@@ -7,11 +7,11 @@ Bleichroeder,Bleichroeder Gerson von,Polizeipräsident Berlin,Bismarck Otto von,
 Bleichroeder,Kreidel,Schwabach Julius Leopold,Bleichroeder Gerson von,1875-07-16,Informal Recommendation,
 Bleichroeder,London Benjamin,Rothschild Albert Salomon Anselm,Bleichroeder (Firma),1876-02-11,Introduction,
 Bleichroeder,Campbell Charles,Prince G + J,Bleichroeder Gerson von,1876-04-04,Introduction,
-Bleichroeder,Frensdorff Felix,R [...] L.,Bleichroeder Gerson von,1877-04-13,Formal Recommendation,
+Bleichroeder,Frensdorff Felix,R. L.,Bleichroeder Gerson von,1877-04-13,Formal Recommendation,
 Bleichroeder,Rambuteau Staatsrath Graf von,Rothschild Albert Salomon Anselm,Bleichroeder (Firma),1877-05-28,Introduction,
 Bleichroeder,Haupt Ottomar,Hofmann Freiherr Leopold von,Bleichroeder (Firma),1878-02-12,Introduction,
 Bleichroeder,Raffalovich Arthur,Raffalovich Hermann,Bleichroeder (Firma),1878-06-08,Introduction,
-Bleichroeder,Daniel Leon,Daniel [...],Bleichroeder (Firma),1878-09-07,Introduction,
+Bleichroeder,Daniel Leon,Daniel,Bleichroeder (Firma),1878-09-07,Introduction,
 Bleichroeder,Daniel Leon,Daniel Leon,Bleichroeder Gerson von,1878-09-23,Introduction,
 Bleichroeder,d´Agiont Baron,Wentzel Richard,Bleichroeder (Firma),1879-01-21,Introduction,
 Bleichroeder,Fraenkel Samuel Anton,Rothschild Nathan,Bleichroeder Gerson von,1879-07-22,Request for Recommendation,
@@ -25,10 +25,10 @@ Bleichroeder,Berlin Ralph,Schlözer Kurd von,Bleichroeder Gerson von,1879-11-21,
 Bleichroeder,Berlin Ralph,Baar H.,Bleichroeder Gerson von,1879-12-31,Request for Recommendation,
 Bleichroeder,Berlin Ralph,Berlin Ralph,Schlözer Kurd von,1879-12-31,Request for Recommendation,
 Bleichroeder,Berlin Ralph,Schlözer Kurd von,Bleichroeder Gerson von,1880-01-02,Request for Recommendation,
-Bleichroeder,Schmidt,Lehndorff [Heinrich von],Bleichroeder Gerson von,1880-02-12,Formal Recommendation,
+Bleichroeder,Schmidt,Lehndorff,Bleichroeder Gerson von,1880-02-12,Formal Recommendation,
 Bleichroeder,Schwabach Julius Leopold,Bleichroeder (Firma),Bleichroeder Gerson von,1880-08-06,Informal Recommendation,
 Bleichroeder,Schwabach Julius Leopold,Bleichroeder (Firma),Bleichroeder Gerson von,1880-08-09,Informal Recommendation,
-Bleichroeder,Meizel Fräulein,Eulenburg A[lbert],Bleichroeder Gerson von,1881-03-13,Formal Recommendation,
+Bleichroeder,Meizel Fräulein,Eulenburg A.,Bleichroeder Gerson von,1881-03-13,Formal Recommendation,
 Bleichroeder,Spiller H. H.,Ampthill,Bleichroeder (Firma),1881-11-17,Introduction,
 Bleichroeder,Budbery,Budbery,Bleichroeder (Firma),1882-08-17,Introduction,
 Bleichroeder,Bond Fredrick,Malet Edward B.,Bleichroeder (Firma),1884-05-18,Introduction,
@@ -38,12 +38,12 @@ Bleichroeder,Carsten Carl,Carsten Carl,Bleichroeder Gerson von,1885-10-22,Reques
 Bleichroeder,Ponsonby Arthur,Malet Edward B.,Bleichroeder (Firma),1886-04-21,Introduction,
 Bleichroeder,Nordhoff Walter,Baruard,Bleichroeder Gerson von,1887-02-18,Introduction,
 Bleichroeder,Barron Henry,Malet Edward B.,Bleichroeder (Firma),1888-05-24,Introduction,
-Bleichroeder,"""junger Mann""",Kendall,Bleichroeder Gerson von,1889-08-10,Formal Recommendation,
+Bleichroeder,junger Mann,Kendall,Bleichroeder Gerson von,1889-08-10,Formal Recommendation,
 Bleichroeder,Hodgetts James Frederick,British Embassy,Bleichroeder (Firma),1890-11-09,Introduction,
 Bleichroeder,Balazy Herr von,Schlözer Kurd von,Bleichroeder (Firma),1890-11-17,Introduction,
 Bleichroeder,Papadacky T.,Caratheodory,Bleichroeder (Firma),1890-12-22,Introduction,
-Bleichroeder,Blum A.S.,? Paul,Bleichroeder Gerson von,1891-03-16,Informal Recommendation,
-Bleichroeder,Wrede Baron von,[B]andolin,Bleichroeder Gerson von,1891-08-08,Formal Recommendation,
+Bleichroeder,Blum A.S.,Paul,Bleichroeder Gerson von,1891-03-16,Informal Recommendation,
+Bleichroeder,Wrede Baron von,Bandolin,Bleichroeder Gerson von,1891-08-08,Formal Recommendation,
 Bleichroeder,Krassay Stefan von,Österreichische Creditanstalt (Firma),Bleichroeder Gerson von,1891-11-02,Introduction,
 Bleichroeder,Reichenau von,Schlözer Kurd von,Bleichroeder (Firma),1892-10-01,Introduction,
 Arnholds,Kummersche Werke,Görges H.,Böhme Rechtsanwalt,1902-07-28,Formal Recommendation,
@@ -66,7 +66,7 @@ Hebrew University,Brieger Richard,Weigert E.,Brieger Richard,1909-09-30,Formal R
 Hebrew University,Brieger Richard,Guttmann Julius C.,Brieger Richard,1910-03-31,Formal Recommendation,False
 American Friends Service Committee,Seinfeld Emanuel,Rascher L.,Seinfeld Emanuel,1912-09-01,Formal Recommendation,
 Hebrew University,Brieger Richard,Nentwig,Brieger Richard,1913-12-31,Formal Recommendation,False
-American Friends Service Committee,Oppenheimer Adolf Josef,"Blumenthal, Herz & Co",Oppenheimer Adolf Josef,1914-08-02,Formal Recommendation,
+American Friends Service Committee,Oppenheimer Adolf Josef,Blumenthal, Herz & Co (Firma),Oppenheimer Adolf Josef,1914-08-02,Formal Recommendation,
 American Friends Service Committee,Nowak Rudolph,Klampfer Rudolf,Nowak Rudolph,1914-08-30,Formal Recommendation,
 American Friends Service Committee,Hessberg Richard,Driessen,Hessberg Richard,1915-07-09,Formal Recommendation,
 American Friends Service Committee,Grünspan Rudolf,Gemeinnützige Ein- und Mehrfamilienhäuser Baugenossenscchaft für Eisenbahner,Grünspan Rudolf,1916-03-30,Formal Recommendation,
@@ -86,12 +86,12 @@ American Friends Service Committee,Neumann Louis,Hammerschmidt,Neumann Louis,191
 American Friends Service Committee,Felix Robert,Zigarettenzeitung,Felix Robert,1920-06-15,Formal Recommendation,
 Hebrew University,Brieger Richard,Baumheier R.,Brieger Richard,1920-07-05,Formal Recommendation,False
 Hebrew University,Baller Robert Adolf,Wiser,Baller Robert Adolf,1921-01-26,Formal Recommendation,False
-American Friends Service Committee,Oppenheimer Adolf Josef,"Blumenthal, Herz & Co",Oppenheimer Adolf Josef,1921-01-31,Formal Recommendation,
+American Friends Service Committee,Oppenheimer Adolf Josef,Blumenthal, Herz & Co (Firma),Oppenheimer Adolf Josef,1921-01-31,Formal Recommendation,
 American Friends Service Committee,Weigl Karl,Strauss Richard,Weigl Karl,1921-03-12,Formal Recommendation,
 American Friends Service Committee,Felix Robert,Kretschmer Ferdinand,Felix Robert,1921-09-15,Formal Recommendation,
 Hebrew University,Baller Robert Adolf,Pauer,Baller Robert Adolf,1921-11-26,Formal Recommendation,False
 Hebrew University,Baller Robert Adolf,Romich,Baller Robert Adolf,1921-12-03,Formal Recommendation,False
-Arnholds,Arnhold Georg,Teuffel,Württembergiscche Regierung,1922-02-23,Informal Recommendation,
+Arnholds,Arnhold Georg,Teuffel,Württembergische Regierung,1922-02-23,Informal Recommendation,
 American Friends Service Committee,Mauthner Ernst von,Peham Hofrat,Mauthner Ernst von,1922-10-31,Formal Recommendation,
 Hebrew University,Frankel Max,Polak Jakob,Frankel Max,1923-01-15,Formal Recommendation,True
 Hebrew University,Baller Robert Adolf,Kraft,Baller Robert Adolf,1923-01-20,Formal Recommendation,False
@@ -118,14 +118,14 @@ Arnholds,Arnhold Adolf,Haager Adolf,Württembergisches Staatsministerium,1926-12
 Arnholds,Arnhold Adolf,Württembergische Gesandtschaft,Württembergisches Staatsministerium,1926-12-14,Formal Recommendation,
 American Friends Service Committee,Neumann Louis,Bassner,Neumann Louis,1927-02-01,Formal Recommendation,
 Hebrew University,Reifenberg Adolf,Ginzberg,Zionist Organisation of Amerika,1927-03-03,Introduction,True
-Arnholds,Arnhold Adolf,Erlenmeyer Albert (Ministerialdirektor),"Verein der ""Württemberger""",1927-03-07,Request for Recommendation,
+Arnholds,Arnhold Adolf,Erlenmeyer Albert (Ministerialdirektor),Verein der Württemberger,1927-03-07,Request for Recommendation,
 American Friends Service Committee,Nowak Rudolph,Hamlisch Ignaz,Nowak Rudolph,1927-04-01,Formal Recommendation,
 Hebrew University,Reifenberg Adolf,Magnes Judah Leon,Friedman Elisha,1927-04-04,Introduction,True
 Hebrew University,Reifenberg Adolf,Magnes Judah Leon,Zwingli,1927-04-04,Introduction,True
 Arnholds,Arnhold Adolf,Mohl Eugen,Arnhold Adolf,1927-05-10,Informal Recommendation,
 American Friends Service Committee,Nowak Rudolph,Löffler Ignaz,Nowak Rudolph,1927-05-13,Formal Recommendation,
 Arnholds,Arnhold Adolf,Mohl Eugen,Erlenmeyer Albert (Ministerialdirektor),1927-06-04,Formal Recommendation,
-Arnholds,Arnhold Adolf,Mohl Eugen,"Verein der ""Württemberger""",1927-06-19,Formal Recommendation,
+Arnholds,Arnhold Adolf,Mohl Eugen,Verein der Württemberger,1927-06-19,Formal Recommendation,
 American Friends Service Committee,Hertz Lotte,Matt Eugen,Hertz Lotte,1927-07-15,Formal Recommendation,
 Hebrew University,Kolthoff Izaak Maurits,Ginzberg,Ornstein Leonard Salomon,1927-11-02,Request for Recommendation,False
 Hebrew University,Kolthoff Izaak Maurits,Ginzberg,Ornstein Leonard Salomon,1927-11-02,Request for Recommendation,True
@@ -166,7 +166,7 @@ Hebrew University,Reifenberg Adolf,Schucht Friedrich Wilhelm,Fodor Andor,1929-06
 Hebrew University,Reifenberg Adolf,Fodor Andor,Magnes Judah Leon,1929-06-17,Formal Recommendation,True
 Arnholds,Stricker Oberingenieur,Arnhold Adolf,Sachsenwerk,1929-06-21,Formal Recommendation,
 Hebrew University,Enriques Paolo,Adler Saul,Magnes Judah Leon,1929-08-01,Formal Recommendation,False
-Arnholds,"A/B Bekladnads-Kompaniet, Malmö-Freihafen",Arnhold Gebrüder,Mechanische Weberei Zittau,1929-08-26,Request for Recommendation,
+Arnholds,A/B Bekladnads-Kompaniet, Malmö-Freihafen,Arnhold Gebrüder,Mechanische Weberei Zittau,1929-08-26,Request for Recommendation,
 Arnholds,Balog Josef,Levy Oscar,Arnhold Kurt,1929-08-27,Informal Recommendation,
 American Friends Service Committee,Oppenheimer-Jahn Luise,Leonhard Tietz AG Köln,Oppenheimer-Jahn Luise,1929-11-15,Formal Recommendation,
 Arnholds,Arnhold Heinrich,Schmitt,Mitglieder des Verwaltungsrats der Gesellschaft von Förderern und Freunden der Technischen Hochschule,1929-11-27,Formal Recommendation,
@@ -180,7 +180,7 @@ Hebrew University,Weber Dr.,Harrison Ross G.,Goldforb,1930-02-15,Informal Recomm
 Hebrew University,Enriques Paolo,Harrison Ross G.,Goldforb,1930-02-15,Informal Recommendation,False
 Hebrew University,Harrison Ross G.,Goldforb,Warburg Otto,1930-02-18,Informal Recommendation,False
 Hebrew University,Krauss Dr.,Magnes Judah Leon,Speiser E. A.,1930-03-07,Request for Recommendation,False
-American Friends Service Committee,Felix Robert,ELektronische Licht- und Kraftwerke,Felix Robert,1930-03-31,Formal Recommendation,
+American Friends Service Committee,Felix Robert,Elektronische Licht- und Kraftwerke,Felix Robert,1930-03-31,Formal Recommendation,
 Hebrew University,Baller Robert Adolf,Lampa Hofrat,Baller Robert Adolf,1930-03-31,Formal Recommendation,False
 Hebrew University,Baller Robert Adolf,Montel,Baller Robert Adolf,1930-04-09,Formal Recommendation,False
 Hebrew University,Enriques Paolo,Warburg Otto,Magnes Judah Leon,1930-04-24,Formal Recommendation,False
@@ -221,7 +221,7 @@ Hebrew University,Theodor Oskar,Fodor Andor,Howard L.,1931-04-30,Request for Rec
 American Friends Service Committee,Nowak Rudolph,Kammerlichtspiele am Schwarzenbergplatz,Nowak Rudolph,1931-05-08,Formal Recommendation,
 Hebrew University,Sambursky Shmuel,Fraenkel Adolf Abraham,Einstein Albert,1931-05-10,Request for Recommendation,True
 American Friends Service Committee,Weigl Karl,Furtwangler Wilhelm,Weigl Karl,1931-05-27,Formal Recommendation,
-Arnholds,Binney,[xx xx xx],Wehrli-Thielen Carl,1931-06-01,Introduction,
+Arnholds,Binney,Unbekannt,Wehrli-Thielen Carl,1931-06-01,Introduction,
 Hebrew University,Hirsch Rudolf,Fülleborn,Hirsch Rudolf,1931-06-01,Formal Recommendation,False
 American Friends Service Committee,Felix Robert,Elektrical Work Bernhard Rost,Felix Robert,1931-07-18,Formal Recommendation,
 American Friends Service Committee,Rosenthal Gerda,Lipschitz Fanny,Rosenthal Gerda,1931-09-06,Formal Recommendation,
@@ -235,19 +235,19 @@ Hebrew University,Engel Paul,Fürth Otto,Engel Paul,1932-02-16,Formal Recommenda
 Hebrew University,Ungar Henry,Scherk,Ungar Henry,1932-02-20,Formal Recommendation,False
 Hebrew University,Haas Georg,Hartmann M.,Bodenheimer Friedrich Simon,1932-02-22,Formal Recommendation,True
 Hebrew University,Ungar Henry,Schopohl,Ungar Henry,1932-02-27,Formal Recommendation,False
-Hebrew University,Gershom Scholem,Ben David M.,"Librarian, Library of the Academy of Science",1932-03-01,Introduction,True
+Hebrew University,Gershom Scholem,Ben David M.,Library of the Academy of Science,1932-03-01,Introduction,True
 Hebrew University,Gershom Scholem,Ben David M.,Gershom Scholem,1932-03-01,Introduction,True
 Hebrew University,Gershom Scholem,Ben David M.,Library Bibliotera Ambrosiana,1932-03-01,Introduction,True
 Hebrew University,Gershom Scholem,Magnes Judah Leon,Ehrle Franz,1932-03-01,Introduction,True
-Hebrew University,Gershom Scholem,Ben David M.,"Librarian, Royal Library",1932-03-01,Introduction,True
+Hebrew University,Gershom Scholem,Ben David M.,Royal Library,1932-03-01,Introduction,True
 Hebrew University,Bonné Alfred,Schloessinger M,Oppenheimer Franz,1932-03-01,Request for Recommendation,True
 Hebrew University,Bonné Alfred,Oppenheimer Franz,Schloessinger M,1932-03-04,Formal Recommendation,True
 American Friends Service Committee,Oppenheimer-Jahn Luise,Deutsche Beamten Einkaufs Aktiengesellschaft,Oppenheimer-Jahn Luise,1932-03-31,Formal Recommendation,
 American Friends Service Committee,Oppenheimer-Jahn Luise,Deutsche Beamten Einkaufs Aktiengesellschaft,Oppenheimer-Jahn Luise,1932-04-01,Formal Recommendation,
 American Friends Service Committee,Grünwald Hans,Baltoil Mineralölhandels- und Tankanlagen,Grünwald Hans,1932-05-01,Formal Recommendation,
 Hebrew University,Bonné Alfred,Harms B.,Bonné Alfred,1932-06-10,Informal Recommendation,True
-Hebrew University,Gershom Scholem,Schloessinger M,"Director, British Museum",1932-07-12,Introduction,True
-Hebrew University,Gershom Scholem,Schloessinger M,"Librarian, Cambridge University Library",1932-07-12,Introduction,True
+Hebrew University,Gershom Scholem,Schloessinger M,British Museum,1932-07-12,Introduction,True
+Hebrew University,Gershom Scholem,Schloessinger M,Cambridge University Library,1932-07-12,Introduction,True
 American Friends Service Committee,Grünwald Hans,Pintus Erich,Grünwald Hans,1932-09-03,Formal Recommendation,
 Hebrew University,Ollendorff Käthe,Frank E.,Ollendorff Käthe,1932-10-25,Formal Recommendation,False
 Hebrew University,Ollendorff Käthe,Prausnitz Carl,Ollendorff Käthe,1932-12-17,Formal Recommendation,False
@@ -270,7 +270,7 @@ Hebrew University,Ollendorff Käthe,Meißner Gertrud,Ollendorff Käthe,1933-05-0
 Hebrew University,Alexander Ernst,Warburg Max,Magnes Judah Leon,1933-05-04,Introduction,True
 Hebrew University,Gradstein Stefan,Walther A.,Gradstein Stefan,1933-05-05,Formal Recommendation,False
 Hebrew University,Glatzer Nahum Norbert,Burton Montague,Magnes Judah Leon,1933-05-08,Introduction,False
-Hebrew University,Baron Hans,[Ducker] A.,Magnes Judah Leon,1933-05-10,Formal Recommendation,False
+Hebrew University,Baron Hans,A.,Magnes Judah Leon,1933-05-10,Formal Recommendation,False
 Hebrew University,Goldhaber George,Blumenthal Ferdiand,Goldhaber George,1933-05-22,Formal Recommendation,True
 American Friends Service Committee,Oppenheimer-Jahn Luise,Ephraim Richard,Oppenheimer-Jahn Luise,1933-05-29,Formal Recommendation,
 American Friends Service Committee,Hessberg Richard,Brons,Hessberg Richard,1933-05-30,Formal Recommendation,
@@ -288,7 +288,7 @@ Hebrew University,Goldhaber George,Halberstädter Ludwig,Goldhaber George,1933-0
 American Friends Service Committee,Weissenberg Walter,Landesarbeitsamt Schlesien,Weissenberg Walter,1933-07-14,Formal Recommendation,
 Hebrew University,Goldhaber George,Friedrich Walter,Goldhaber George,1933-07-17,Formal Recommendation,True
 Hebrew University,Bickermann Elias,Academic Assistance Council,Magnes Judah Leon,1933-08-03,Introduction,False
-Hebrew University,Wolff-Eisner,[xxx] Fr.,Magnes Judah Leon,1933-08-17,Formal Recommendation,False
+Hebrew University,Wolff-Eisner,Fr.,Magnes Judah Leon,1933-08-17,Formal Recommendation,False
 Hebrew University,Brieger Richard,Wolff P.,Magnes Judah Leon,1933-08-21,Formal Recommendation,False
 Hebrew University,Lachmann Robert,Wolf Johannes,Lachmann Robert,1933-08-29,Formal Recommendation,True
 Hebrew University,Brieger Richard,Magnes Judah Leon,Wolff P.,1933-08-30,Request for Recommendation,False
@@ -316,7 +316,7 @@ Hebrew University,Brückmann Gerhard,Brückmann Gerhard,Fodor Andor,1933-09-25,I
 Hebrew University,Alexander Ernst,Warburg Max,Magnes Judah Leon,1933-09-27,Formal Recommendation,True
 American Friends Service Committee,Elkan Dorothea,Faukaroski P.,Elkan Dorothea,1933-09-28,Formal Recommendation,
 American Friends Service Committee,Oppenheimer-Jahn Luise,Deutsches Familien-Kaufhaus,Oppenheimer-Jahn Luise,1933-09-30,Formal Recommendation,
-Hebrew University,Brieger Richard,[xxx],Magnes Judah Leon,1933-10-03,Informal Recommendation,False
+Hebrew University,Brieger Richard,Unbekannter Kontakt,Magnes Judah Leon,1933-10-03,Informal Recommendation,False
 Hebrew University,Nagelschmidt,Neuberg Carl,Magnes Judah Leon,1933-10-06,Informal Recommendation,False
 Hebrew University,Brieger Richard,Neuberg Carl,Magnes Judah Leon,1933-10-06,Informal Recommendation,False
 Hebrew University,Brieger Richard,Gilg Ernst,Brieger Richard,1933-10-07,Formal Recommendation,False
@@ -326,7 +326,7 @@ Hebrew University,Brieger Richard,Wasicky Richard,Brieger Richard,1933-10-16,For
 Hebrew University,Brieger Richard,Fodor Andor,Magnes Judah Leon,1933-10-19,Informal Recommendation,False
 Hebrew University,Brieger Richard,Brieger Richard,Magnes Judah Leon,1933-10-20,Informal Recommendation,False
 Arnholds,Firma Adolf Pasmantier,Arnhold Gebrüder,Mechanische Weberei Zittau,1933-10-21,Request for Recommendation,
-Hebrew University,Pharmazeut,[xxx],Magnes Judah Leon,1933-10-22,Request for Recommendation,False
+Hebrew University,Pharmazeut,Unbekannter Kontakt,Magnes Judah Leon,1933-10-22,Request for Recommendation,False
 Hebrew University,Nagelschmidt,Magnes Judah Leon,Neuberg Carl,1933-10-23,Request for Recommendation,False
 Hebrew University,Brieger Richard,Magnes Judah Leon,Neuberg Carl,1933-10-23,Request for Recommendation,False
 Hebrew University,Brieger Richard,Magnes Judah Leon,Laqueur Ernst,1933-10-23,Request for Recommendation,False
@@ -347,7 +347,7 @@ Hebrew University,Polotsky Hans Jakob,Meltzer J. L.,Albright William Foxwell,193
 Hebrew University,Polotsky Hans Jakob,Albright William Foxwell,Meltzer J. L.,1933-12-09,Formal Recommendation,True
 Hebrew University,Brieger Richard,Magnes Judah Leon,Warburg Otto,1933-12-12,Request for Recommendation,False
 Hebrew University,Brieger Richard,Magnes Judah Leon,Warburg Otto,1933-12-19,Request for Recommendation,False
-Hebrew University,Koebner Richard,[Baer],Magnes Judah Leon,1933-12-20,Informal Recommendation,True
+Hebrew University,Koebner Richard,Baer,Magnes Judah Leon,1933-12-20,Informal Recommendation,True
 American Friends Service Committee,Hessberg Richard,Deutsche Reichsbahngesellschaft,Hessberg Richard,1933-12-22,Informal Recommendation,
 Hebrew University,Polotsky Hans Jakob,Levy Hans,Schloessinger M,1933-12-31,Formal Recommendation,True
 Hebrew University,Wolfsohn Günther,Ornstein Leonard Salomon,Wolfsohn Günther,1934-01-04,Formal Recommendation,True
@@ -386,11 +386,11 @@ Hebrew University,Engel Paul,Denk,Engel Paul,1935-05-31,Formal Recommendation,Fa
 American Friends Service Committee,Stössel Franz,Hoyer Alois,Stössel Franz,1935-07-06,Formal Recommendation,
 Hebrew University,Schwabe Moshe,Magnes Judah Leon,American School of Archaeology The Director,1935-07-24,Introduction,True
 Hebrew University,Schwabe Moshe,Ben David M.,Schwabe Moshe,1935-07-25,Introduction,True
-American Friends Service Committee,Felix Robert,"""Der Anker"" General Insurance",Felix Robert,1935-09-28,Formal Recommendation,
+American Friends Service Committee,Felix Robert,Der Anker-General Insurance,Felix Robert,1935-09-28,Formal Recommendation,
 American Friends Service Committee,Rosenthal Gerda,Meyer Ilse,Rosenthal Gerda,1935-10-01,Formal Recommendation,
 American Friends Service Committee,Hellinger Johanna,Krauss Hertha,Kensil Mrs.,1935-10-03,Formal Recommendation,
 Hebrew University,Rothbarth Margarete,Zweig Arnold,Bergmann Samuel Hugo,1935-11-12,Introduction,True
-Hebrew University,Modlinger ...,Warburg Otto,Bergmann Samuel Hugo,1935-11-22,Introduction,True
+Hebrew University,Modlinger,Warburg Otto,Bergmann Samuel Hugo,1935-11-22,Introduction,True
 American Friends Service Committee,Mislap Robert,Winkler Dr.,Mislap Robert,1936-02-29,Formal Recommendation,
 Hebrew University,Landshut Siegfried,Heimann Eduard,Kohn Hans,1936-03-05,Formal Recommendation,True
 Hebrew University,Landshut Siegfried,Wolfers Arnold,Kittredge Tracey Barrett,1936-04-07,Formal Recommendation,True
@@ -448,7 +448,7 @@ Hebrew University,Stoyanovsky,Bentwich Norman,Senator David Werner,1938-02-09,In
 Hebrew University,Mathisson Myron,Hadamard Jacques,Magnes Judah Leon,1938-04-14,Informal Recommendation,False
 Hebrew University,Elias,Kligler Israel Jacob,Yassky Chaim,1938-04-21,Informal Recommendation,False
 Hebrew University,Altmann Franz,Hermann Hugo,Bergmann Samuel Hugo,1938-05-01,Informal Recommendation,False
-American Friends Service Committee,Wollweber Trude,Darre (?) Gertrude,Krauss Hertha,1938-05-03,Introduction,
+American Friends Service Committee,Wollweber Trude,D. Gertrude,Krauss Hertha,1938-05-03,Introduction,
 American Friends Service Committee,Pollak-Planer Petr,Die Direktion der Prager Handelsakademie,Pollak-Planer Petr,1938-05-12,Formal Recommendation,
 American Friends Service Committee,Weigl Karl,Schoenberg Arnold,Weigl Karl,1938-06-01,Formal Recommendation,
 Hebrew University,Elias,Senator David Werner,Schmitz,1938-06-02,Request for Recommendation,False
@@ -486,7 +486,7 @@ American Friends Service Committee,Froeschel Emil,Cadbury Emma,Yarnall Robert,19
 American Friends Service Committee,Turnau Helene,Norton Allen Mary,AFSC Organisation,1938-10-15,Formal Recommendation,
 American Friends Service Committee,Weigl Karl,Bodanzky Arthur,Weigl Karl,1938-10-19,Formal Recommendation,
 American Friends Service Committee,Löwenberg Ernst,Spier,Löwenberg Ernst,1938-10-25,Formal Recommendation,
-Bleichroeder,Notteboom (Familie),Brunner,Schwabach Paul von,1938-10-28,Request for Recommendation,
+Bleichroeder,Familie Notteboom,Brunner,Schwabach Paul von,1938-10-28,Request for Recommendation,
 American Friends Service Committee,Marcuse Joachim,Gebrüder Freudenheim,Marcuse Joachim,1938-10-31,Formal Recommendation,
 American Friends Service Committee,Weiss Franz,Cadbury Emma,Yarnall Robert,1938-10-31,Introduction,
 American Friends Service Committee,Fries Anna,Cox Wright Elisabeth,Fries Anna,1938-11-01,Formal Recommendation,
@@ -559,7 +559,7 @@ American Friends Service Committee,Schroder Jurgen,Daetsch Lynn,Martin Anne,1939
 American Friends Service Committee,Prosch Lina,Austrian Womens Association,Prosch Lina,1939-05-19,Formal Recommendation,
 American Friends Service Committee,Graetzer Günther,Tyson Helen G.,Rogers Mary M.,1939-05-27,Introduction,
 American Friends Service Committee,Königsberger Erich,Grüber Pfarrer,AFSC Organisation,1939-06-05,Informal Recommendation,
-Hebrew University,Aescoly,Mauss Marcel,"""Cher Ami""",1939-06-09,Formal Recommendation,False
+Hebrew University,Aescoly,Mauss Marcel,Cher Ami,1939-06-09,Formal Recommendation,False
 American Friends Service Committee,Rager Fritz,Schauffler Marjorie Page,Byer Clara,1939-06-12,Introduction,
 Hebrew University,Pick Ernest,von Idelson,Magnes Judah Leon,1939-06-15,Request for Recommendation,False
 Hebrew University,Elias,von Idelson,Magnes Judah Leon,1939-06-15,Request for Recommendation,False
@@ -780,7 +780,7 @@ American Friends Service Committee,Riess Anita,Balderston Martha,Rogers Mary M.,
 American Friends Service Committee,Fliess Fritz,Norment Caroline G.,Reynolds Jean,1941-06-21,Informal Recommendation,
 American Friends Service Committee,Vaszonyi Andrew,Krauss Hertha,Lang Marion,1941-07-07,Introduction,
 American Friends Service Committee,Arnholz Sabine,Hambly Hanstein Kathleen,Tyler Leona,1941-07-23,Introduction,
-American Friends Service Committee,Adler Alfred,"""Kurt""",Reynolds Jean,1941-08-19,Introduction,
+American Friends Service Committee,Adler Alfred,Kurt,Reynolds Jean,1941-08-19,Introduction,
 American Friends Service Committee,Arnholz Sabine,Roggeveen Irene,Schauffler Marjorie Page,1941-08-22,Informal Recommendation,
 American Friends Service Committee,Königsberger Erich,Mrs. Guy Atkinson,Schauffler Marjorie Page,1941-08-28,Introduction,
 American Friends Service Committee,Vaszonyi Andrew,Bergman Stefan,National Refugee Service,1941-08-29,Introduction,
