@@ -1,11 +1,15 @@
+###################################################################################################
+# Temporal analysis functionality is still under development and not yet intended for public use  #
+###################################################################################################
+
 import networkx as nx
 import numpy as np
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
-from collections import Counter
 import json
 from corrnet.compute_centralities import compute_centralities
+from corrnet.utils import return_fig
 
 
 def temporal_analysis(letter_manager, earliest_date=None, latest_date=None, filter_by=None,
@@ -80,7 +84,7 @@ def plot_pagerank(temporal_data, figsize=None, nodes=None, save_as=None):
             axes[i, j].set_title(node)
         axes[i, 0].set_ylabel('Normalized PageRank\non original network')
         axes[i, 1].set_ylabel('Normalized PageRank\non reversed network')
-    _return_fig(fig, save_as)
+    return_fig(fig, save_as)
 
 
 def plot_network_properties(temporal_data, figsize=None, save_as=None):
@@ -100,7 +104,7 @@ def plot_network_properties(temporal_data, figsize=None, save_as=None):
         axes[i, j].set_ylabel(ylabels[column])
     axes[2, 1].axis('off')
     axes[2, 2].axis('off')
-    _return_fig(fig, save_as)
+    return_fig(fig, save_as)
 
 
 def plot_network_dynamics(temporal_data, figsize=None, save_as=None):
@@ -115,7 +119,7 @@ def plot_network_dynamics(temporal_data, figsize=None, save_as=None):
         sns.lineplot(data=temporal_data, x='window_start', y=column, ax=axes[i, j])
         axes[i, j].set_xlabel('Window start')
         axes[i, j].set_ylabel(' '.join(column.split('_')).capitalize())
-    _return_fig(fig, save_as)
+    return_fig(fig, save_as)
 
 
 
@@ -130,8 +134,6 @@ def sort_nodes_by_aggregated_pagerank(temporal_data, aggregator=np.mean):
     aggregated_pageranks['reversed'] = sorted([(node, aggregator(temporal_data[f'pagerank_reversed_{node}']))
                                                for node in all_nodes], key=lambda t: t[1], reverse=True)
     return aggregated_pageranks
-
-
 
 
 def compute_network_properties(digraph, save_as=None):
@@ -151,8 +153,6 @@ def compute_network_properties(digraph, save_as=None):
         with open(save_as, mode='w') as fp:
             json.dump(properties, fp, indent='\t', sort_keys=True)
     return properties
-
-
 
 
 def _add_years_to_timestamp(timestamp, num_years):
