@@ -49,7 +49,7 @@ def compute_network_properties(digraph=None, multi_digraph=None, line_graph=None
     sizes_lwcc = []
     if digraph:
         network_types.append('Digraph')
-        _compute_network_properties(line_graph, nums_nodes, nums_edges, nums_wccs, sizes_lwcc)
+        _compute_network_properties(digraph, nums_nodes, nums_edges, nums_wccs, sizes_lwcc)
     if multi_digraph:
         network_types.append('Multi-digraph')
         _compute_network_properties(multi_digraph, nums_nodes, nums_edges, nums_wccs, sizes_lwcc)
