@@ -9,8 +9,9 @@ __pycache__/
 # C extensions
 *.so
 
-# PDF files
+# PDF and EPS files
 *.pdf
+*.eps
 
 # Distribution / packaging
 .ipynb_checkpoints/

@@ -39,7 +39,8 @@ def _get_centrality_fun(centrality_measure):
         'PageRank centrality': nx.pagerank_scipy,
         'Harmonic centrality': nx.centrality.harmonic_centrality,
         'Betweenness centrality': nx.centrality.betweenness_centrality,
-        'Degree centrality': nx.centrality.in_degree_centrality
+        'Degree centrality': nx.centrality.in_degree_centrality,
+        'Closeness centrality': nx.centrality.closeness_centrality
     }
     return centrality_fun_dict[centrality_measure]
 

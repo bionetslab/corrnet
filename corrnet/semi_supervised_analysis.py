@@ -30,32 +30,42 @@ def semi_supervised_analysis(line_graph, predict_attribute,
     """
     fig, axes = _setup_figure(methods, figsize)
     for i, method_name in enumerate(methods):
-        accuracies_for_real_labels = _semi_supervised_analysis(line_graph, predict_attribute, False, num_cv_runs,
+        accuracies_for_real_labels = _semi_supervised_analysis(line_graph, predict_attribute, False, False, num_cv_runs,
                                                                num_folds, method_name)
-        accuracies_for_shuffled_labels = _semi_supervised_analysis(line_graph, predict_attribute, True, num_cv_runs,
-                                                                   num_folds, method_name)
+        accuracies_for_shuffled_labels = _semi_supervised_analysis(line_graph, predict_attribute, True, False,
+                                                                   num_cv_runs, num_folds, method_name)
+        accuracies_for_rewired_networks = _semi_supervised_analysis(line_graph, predict_attribute, False, True,
+                                                                    num_cv_runs, num_folds, method_name)
         df = pd.DataFrame(data={
-            'Mean CV accuracy': accuracies_for_real_labels + accuracies_for_shuffled_labels,
-            f'{predict_attribute} labels': ['Real' for _ in range(num_cv_runs)] + ['Shuffled' for _ in range(num_cv_runs)]
+            'Mean CV accuracy': accuracies_for_real_labels + accuracies_for_shuffled_labels +
+                                accuracies_for_rewired_networks,
+            f'Randomization': ['None' for _ in range(num_cv_runs)] +
+                              [f'Shuffled {predict_attribute} labels' for _ in range(num_cv_runs)] +
+                              ['Randomized networks' for _ in range(num_cv_runs)]
         })
-        sns.histplot(data=df, x='Mean CV accuracy', ax=axes[i], hue=f'{predict_attribute} labels', kde=True)
+        sns.histplot(data=df, x='Mean CV accuracy', ax=axes[i], hue=f'Randomization', kde=True)
         axes[i].set_title(f'Classifier: {method_name}')
         axes[i].set_ylabel('Number of CV runs')
     return utils.return_fig(fig, save_as)
 
 
-def _semi_supervised_analysis(line_graph, predict_attribute, shuffle_labels, num_cv_runs, num_folds, method_name):
+def _semi_supervised_analysis(line_graph, predict_attribute, shuffle_labels, random_line_graph, num_cv_runs, num_folds,
+                              method_name):
     utils.check_attribute(line_graph, predict_attribute)
     node_ids, node_labels = _get_ids_and_labels_of_labeled_nodes(line_graph, predict_attribute)
     mean_cv_accuracies = []
     for _ in range(num_cv_runs):
         if shuffle_labels:
             _shuffle_labels(node_labels)
+        cv_undirected_line_graph = nx.Graph(line_graph)
+        if random_line_graph:
+            cv_undirected_line_graph = nx.gnm_random_graph(cv_undirected_line_graph.number_of_nodes(),
+                                                           cv_undirected_line_graph.number_of_edges())
         folds = _get_folds(node_ids, num_folds)
         accuracies = []
         for test_fold_id, test_fold in enumerate(folds):
             training_fold = [node_id for fold_id in range(num_folds) if fold_id != test_fold_id for node_id in folds[fold_id]]
-            undirected_line_graph = nx.Graph(line_graph)
+            undirected_line_graph = nx.Graph(cv_undirected_line_graph)
             node_list = list(undirected_line_graph.nodes)
             for node_id in training_fold:
                 node = node_list[node_id]
