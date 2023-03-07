@@ -59,8 +59,8 @@ def _semi_supervised_analysis(line_graph, predict_attribute, shuffle_labels, ran
             _shuffle_labels(node_labels)
         cv_undirected_line_graph = nx.Graph(line_graph)
         if random_line_graph:
-            cv_undirected_line_graph = nx.gnm_random_graph(cv_undirected_line_graph.number_of_nodes(),
-                                                           cv_undirected_line_graph.number_of_edges())
+            degree_sequence = [d for _, d in cv_undirected_line_graph.degree()]
+            cv_undirected_line_graph = nx.expected_degree_graph(degree_sequence, selfloops=False)
         folds = _get_folds(node_ids, num_folds)
         accuracies = []
         for test_fold_id, test_fold in enumerate(folds):
